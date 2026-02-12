@@ -1,0 +1,36 @@
+target: "Qatar-1 b"
+ra_deg: 304.814,   # RA of target in degrees (example; replace with exact)
+dec_deg: 65.162,   # Dec of target in degrees
+ephemeris_utc:     # supplied times (yyyy-mm-dd hh:mm)
+  ingress:  "2025-09-24 08:49"
+  mid:      "2025-09-24 09:38"
+  egress:   "2025-09-24 10:28"
+
+camera:
+  model: "ZWO ASI585MC Pro"
+  pixel_um: 2.9
+  plate_scale_arcsec_per_pix: 1.48
+  bitdepth: 16
+  gain: 252
+  temperature_c: -14.5
+  exposure_s: 60
+  binning: "1x1"
+  filter: "none"
+
+site:
+  name: "Beaverton, OR"
+  bortle: 8
+  guiding_rms_arcsec: 1.0
+
+aij:
+  use_ra_dec: true
+  # aperture/annulus skew grid — used by generate_skews.py
+  r_ap_pix:  [2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0]
+  r_in_pix:  [9.0, 9.5, 10.0, 10.5, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]
+  r_out_pix: [19.0, 19.5, 20.0, 20.5, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0]
+  # keep r_out - r_in >= 8 px and avoid blends
+
+io:
+  fits_glob: "datasets/raw/*.fits"   # if you want headless AIJ to run
+  csv_dir:   "datasets/csv"          # AIJ CSV outputs go here
+  outputs:   "outputs"               # plots + summary

@@ -1,0 +1,58 @@
+# ── FITS data (never commit) ──────────────────────────────
+*.fit
+*.fits
+*.fts
+
+# ── Python ────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+.eggs/
+
+# ── Node / JS ─────────────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# ── IDE / editor ──────────────────────────────────────────
+.cursor/
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# ── Logs ──────────────────────────────────────────────────
+debug.log
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ── Generated outputs ────────────────────────────────────
+*.xlsx
+*.csv
+!**/example_datasets/**/*.csv
+!**/example_datasets/**/*.radec
+
+# ── AIJ generated jobs ───────────────────────────────────
+transit-photometry/aij/jobs/*.ijm
+
+# ── Cached API data ──────────────────────────────────────
+exoclock_planets.json
+exoclock_planets_adjusted.json
+
+# ── Large reference images ────────────────────────────────
+calibration_images/
+
+# ── Miscellaneous ─────────────────────────────────────────
+*.tmp
+*.bak
+Thumbs.db

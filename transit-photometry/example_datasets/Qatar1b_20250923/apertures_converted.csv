@@ -1,0 +1,8 @@
+label,type,ra_deg,dec_deg,mag,include
+T1,target,303.38137083,65.16290833,,true
+C1,comparison,303.70381250,65.18151111,,true
+C2,comparison,303.65387500,64.97325000,,true
+C3,comparison,303.49111667,65.33725833,,true
+C4,comparison,303.25655417,65.36454444,,true
+C5,comparison,303.11387500,65.17866389,,true
+C6,comparison,302.81175833,65.21059722,,true

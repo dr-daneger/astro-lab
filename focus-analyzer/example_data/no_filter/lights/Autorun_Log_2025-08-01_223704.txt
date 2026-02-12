@@ -1,0 +1,450 @@
+Log enabled at 2025/08/01 22:37:04
+2025/08/01 22:37:04 Plan NGC281 Start
+2025/08/01 22:37:04 [Autorun|Begin] NGC281 Start
+2025/08/01 22:37:04 Wait 11min55s
+2025/08/01 22:48:59 [Guide] Stop Guiding
+2025/08/01 22:49:00 [AutoCenter|Begin] Auto-Center 1#
+2025/08/01 22:49:00 Mount slews to target position: RA:0h54m24s DEC:+56°45'47"
+2025/08/01 22:49:01 Exposure 10.0s
+2025/08/01 22:49:12 Plate Solve
+2025/08/01 22:49:17 Solve succeeded: RA:0h54m37s DEC:+56°45'35" Angle = 46.711, Star number = 1769
+2025/08/01 22:49:17 [AutoCenter|End] Too far from center, distance = 3%(0.0290204°)
+2025/08/01 22:49:19 [AutoCenter|Begin] Auto-Center 2#
+2025/08/01 22:49:19 Mount slews to target position: RA:0h54m24s DEC:+56°45'47"
+2025/08/01 22:49:20 Exposure 10.0s
+2025/08/01 22:49:32 Plate Solve
+2025/08/01 22:49:36 Solve succeeded: RA:0h54m27s DEC:+56°45'49" Angle = 46.382, Star number = 1869
+2025/08/01 22:49:36 [AutoCenter|End] The target is centered
+2025/08/01 22:49:37 Start Tracking
+2025/08/01 22:49:37 [Guide] ReSelect Guide star
+2025/08/01 22:49:38 [Guide] Start Guiding
+2025/08/01 22:49:39 [Guide] Guide Settle
+2025/08/01 22:49:47 [Guide] Settle Done
+2025/08/01 22:49:47 Shooting 57 light frames, exposure 300.0s Bin2
+2025/08/01 22:49:47 Start Tracking
+2025/08/01 22:49:47 [Guide] Stop Guiding
+2025/08/01 22:49:47 [AutoFocus|Begin] Run AF before Autorun start, exposure 2.0s Bin1, temperature 20.9℃
+2025/08/01 22:49:47 Find Focus Star
+2025/08/01 22:49:53 Find Focus Star: detect and calculate star size 3.2 ,  EAF position 26894
+2025/08/01 22:49:53 Find Focus Star: finding appropriate stars star size 3.2
+2025/08/01 22:50:09 Find Focus Star: detect and calculate star size 17.6 ,  EAF position 27044
+2025/08/01 22:50:09 Calculate V-Curve
+2025/08/01 22:50:15 Calculate V-Curve: detect and calculate star size 17.3 ,  EAF position 27044
+2025/08/01 22:50:22 Calculate V-Curve: detect and calculate star size 13.9 ,  EAF position 27014
+2025/08/01 22:50:29 Calculate V-Curve: detect and calculate star size 10.3 ,  EAF position 26984
+2025/08/01 22:50:36 Calculate V-Curve: detect and calculate star size 6.7 ,  EAF position 26954
+2025/08/01 22:50:42 Calculate V-Curve: detect and calculate star size 4.1 ,  EAF position 26924
+2025/08/01 22:50:49 Calculate V-Curve: detect and calculate star size 4.5 ,  EAF position 26864
+2025/08/01 22:50:56 Calculate V-Curve: detect and calculate star size 11.2 ,  EAF position 26804
+2025/08/01 22:51:03 Calculate V-Curve: detect and calculate star size 15.1 ,  EAF position 26774
+2025/08/01 22:51:10 Calculate V-Curve: detect and calculate star size 19.1 ,  EAF position 26744
+2025/08/01 22:51:20 Find Focus Point
+2025/08/01 22:51:26 Calculate Focus Point: detect and calculate star size 6.7 ,  EAF position 26958
+2025/08/01 22:51:33 Calculate Focus Point: detect and calculate star size 5.2 ,  EAF position 26943
+2025/08/01 22:51:40 Calculate Focus Point: detect and calculate star size 4.0 ,  EAF position 26928
+2025/08/01 22:51:46 Calculate Focus Point: detect and calculate star size 3.4 ,  EAF position 26913
+2025/08/01 22:51:53 Calculate Focus Point: detect and calculate star size 3.1 ,  EAF position 26898
+2025/08/01 22:51:53 Auto focus succeeded, the focused position is 26898
+2025/08/01 22:51:53 [AutoFocus|End] Auto focus succeeded
+2025/08/01 22:51:54 [Guide] ReSelect Guide star
+2025/08/01 22:51:55 [Guide] Start Guiding
+2025/08/01 22:51:56 [Guide] Guide Settle
+2025/08/01 22:52:01 [Guide] Settle Done
+2025/08/01 22:52:01 Exposure 300.0s image 1#
+2025/08/01 22:57:03 [Guide] Dither
+2025/08/01 22:57:03 [Guide] Dither Settle
+2025/08/01 22:57:16 [Guide] Settle Done
+2025/08/01 22:57:17 Exposure 300.0s image 2#
+2025/08/01 23:02:18 [Guide] Dither
+2025/08/01 23:02:19 [Guide] Dither Settle
+2025/08/01 23:02:32 [Guide] Settle Done
+2025/08/01 23:02:32 Exposure 300.0s image 3#
+2025/08/01 23:07:34 [Guide] Dither
+2025/08/01 23:07:34 [Guide] Dither Settle
+2025/08/01 23:07:44 [Guide] Settle Done
+2025/08/01 23:07:44 Exposure 300.0s image 4#
+2025/08/01 23:12:46 [Guide] Dither
+2025/08/01 23:12:46 [Guide] Dither Settle
+2025/08/01 23:12:56 [Guide] Settle Done
+2025/08/01 23:12:56 Exposure 300.0s image 5#
+2025/08/01 23:17:57 [Guide] Dither
+2025/08/01 23:17:57 [Guide] Dither Settle
+2025/08/01 23:18:04 [Guide] Settle Done
+2025/08/01 23:18:04 Exposure 300.0s image 6#
+2025/08/01 23:23:06 [Guide] Dither
+2025/08/01 23:23:06 [Guide] Dither Settle
+2025/08/01 23:23:16 [Guide] Settle Done
+2025/08/01 23:23:16 Exposure 300.0s image 7#
+2025/08/01 23:28:18 [Guide] Dither
+2025/08/01 23:28:18 [Guide] Dither Settle
+2025/08/01 23:28:27 [Guide] Settle Done
+2025/08/01 23:28:28 Exposure 300.0s image 8#
+2025/08/01 23:33:29 [Guide] Dither
+2025/08/01 23:33:29 [Guide] Dither Settle
+2025/08/01 23:33:36 [Guide] Settle Done
+2025/08/01 23:33:36 Exposure 300.0s image 9#
+2025/08/01 23:38:38 [Guide] Dither
+2025/08/01 23:38:38 [Guide] Dither Settle
+2025/08/01 23:38:48 [Guide] Settle Done
+2025/08/01 23:38:48 Exposure 300.0s image 10#
+2025/08/01 23:43:50 [Guide] Dither
+2025/08/01 23:43:50 [Guide] Dither Settle
+2025/08/01 23:43:59 [Guide] Settle Done
+2025/08/01 23:43:59 Exposure 300.0s image 11#
+2025/08/01 23:49:01 [Guide] Dither
+2025/08/01 23:49:01 [Guide] Dither Settle
+2025/08/01 23:49:13 [Guide] Settle Done
+2025/08/01 23:49:13 Exposure 300.0s image 12#
+2025/08/01 23:54:15 [Guide] Dither
+2025/08/01 23:54:15 [Guide] Dither Settle
+2025/08/01 23:54:27 [Guide] Settle Done
+2025/08/01 23:54:27 Exposure 300.0s image 13#
+2025/08/01 23:59:29 [Guide] Dither
+2025/08/01 23:59:29 [Guide] Dither Settle
+2025/08/01 23:59:41 [Guide] Settle Done
+2025/08/01 23:59:41 Exposure 300.0s image 14#
+2025/08/02 00:04:43 [Guide] Dither
+2025/08/02 00:04:43 [Guide] Dither Settle
+2025/08/02 00:04:51 [Guide] Settle Done
+2025/08/02 00:04:51 Exposure 300.0s image 15#
+2025/08/02 00:09:53 [Guide] Dither
+2025/08/02 00:09:53 [Guide] Dither Settle
+2025/08/02 00:10:11 [Guide] Settle Done
+2025/08/02 00:10:11 Start Tracking
+2025/08/02 00:10:11 [Guide] Stop Guiding
+2025/08/02 00:10:11 [AutoFocus|Begin] Run AF when temperature changed 2 degrees, 21.1℃ changed to 19.0℃, exposure 2.0s Bin1, temperature 19.0℃
+2025/08/02 00:10:11 Find Focus Star
+2025/08/02 00:10:18 Find Focus Star: detect and calculate star size 3.6 ,  EAF position 26898
+2025/08/02 00:10:18 Find Focus Star: finding appropriate stars star size 3.6
+2025/08/02 00:10:33 Find Focus Star: detect and calculate star size 15.0 ,  EAF position 27048
+2025/08/02 00:10:33 Calculate V-Curve
+2025/08/02 00:10:40 Calculate V-Curve: detect and calculate star size 15.3 ,  EAF position 27048
+2025/08/02 00:10:47 Calculate V-Curve: detect and calculate star size 11.6 ,  EAF position 27018
+2025/08/02 00:10:54 Calculate V-Curve: detect and calculate star size 8.2 ,  EAF position 26988
+2025/08/02 00:11:00 Calculate V-Curve: detect and calculate star size 4.6 ,  EAF position 26958
+2025/08/02 00:11:07 Calculate V-Curve: detect and calculate star size 3.1 ,  EAF position 26928
+2025/08/02 00:11:14 Calculate V-Curve: detect and calculate star size 3.7 ,  EAF position 26898
+2025/08/02 00:11:21 Calculate V-Curve: detect and calculate star size 5.8 ,  EAF position 26868
+2025/08/02 00:11:28 Calculate V-Curve: detect and calculate star size 9.3 ,  EAF position 26838
+2025/08/02 00:11:35 Calculate V-Curve: detect and calculate star size 13.4 ,  EAF position 26808
+2025/08/02 00:11:44 Find Focus Point
+2025/08/02 00:11:50 Calculate Focus Point: detect and calculate star size 6.9 ,  EAF position 26980
+2025/08/02 00:11:57 Calculate Focus Point: detect and calculate star size 5.1 ,  EAF position 26965
+2025/08/02 00:12:04 Calculate Focus Point: detect and calculate star size 4.0 ,  EAF position 26950
+2025/08/02 00:12:11 Calculate Focus Point: detect and calculate star size 3.2 ,  EAF position 26935
+2025/08/02 00:12:17 Calculate Focus Point: detect and calculate star size 3.1 ,  EAF position 26920
+2025/08/02 00:12:17 Auto focus succeeded, the focused position is 26920
+2025/08/02 00:12:18 [AutoFocus|End] Auto focus succeeded
+2025/08/02 00:12:18 [Guide] ReSelect Guide star
+2025/08/02 00:12:19 [Guide] Start Guiding
+2025/08/02 00:12:21 [Guide] Guide Settle
+2025/08/02 00:12:25 [Guide] Settle Done
+2025/08/02 00:12:25 Exposure 300.0s image 16#
+2025/08/02 00:17:27 [Guide] Dither
+2025/08/02 00:17:27 [Guide] Dither Settle
+2025/08/02 00:17:42 [Guide] Settle Done
+2025/08/02 00:17:42 Exposure 300.0s image 17#
+2025/08/02 00:22:44 [Guide] Dither
+2025/08/02 00:22:44 [Guide] Dither Settle
+2025/08/02 00:22:55 [Guide] Settle Done
+2025/08/02 00:22:55 Exposure 300.0s image 18#
+2025/08/02 00:23:19 [Guide] Guide star lost
+2025/08/02 00:23:20 [Guide] ReSelect Guide star
+2025/08/02 00:23:21 [Guide] Start Guiding
+2025/08/02 00:27:57 [Guide] Dither
+2025/08/02 00:27:57 [Guide] Dither Settle
+2025/08/02 00:28:09 [Guide] Settle Done
+2025/08/02 00:28:09 Exposure 300.0s image 19#
+2025/08/02 00:33:11 [Guide] Dither
+2025/08/02 00:33:11 [Guide] Dither Settle
+2025/08/02 00:33:24 [Guide] Settle Done
+2025/08/02 00:33:24 [Guide] Stop Guiding
+2025/08/02 00:33:24 [AutoCenter|Begin] Auto-Center 1#
+2025/08/02 00:33:24 Mount slews to target position: RA:0h54m24s DEC:+56°45'47"
+2025/08/02 00:33:25 Exposure 10.0s
+2025/08/02 00:33:37 Plate Solve
+2025/08/02 00:33:43 Solve succeeded: RA:0h54m5s DEC:+56°54'40" Angle = 46.188, Star number = 2341
+2025/08/02 00:33:43 [AutoCenter|End] Too far from center, distance = 17%(0.154711°)
+2025/08/02 00:33:45 [AutoCenter|Begin] Auto-Center 2#
+2025/08/02 00:33:45 Mount slews to target position: RA:0h54m24s DEC:+56°45'47"
+2025/08/02 00:33:46 Exposure 10.0s
+2025/08/02 00:33:58 Plate Solve
+2025/08/02 00:34:02 Solve succeeded: RA:0h54m24s DEC:+56°46'3" Angle = 45.761, Star number = 2225
+2025/08/02 00:34:02 [AutoCenter|End] The target is centered
+2025/08/02 00:34:03 [Guide] ReSelect Guide star
+2025/08/02 00:34:04 [Guide] Start Guiding
+2025/08/02 00:34:05 [Guide] Guide Settle
+2025/08/02 00:34:12 [Guide] Settle Done
+2025/08/02 00:34:12 Exposure 300.0s image 20#
+2025/08/02 00:39:13 [Guide] Dither
+2025/08/02 00:39:14 [Guide] Dither Settle
+2025/08/02 00:39:23 [Guide] Settle Done
+2025/08/02 00:39:23 Exposure 300.0s image 21#
+2025/08/02 00:44:25 [Guide] Dither
+2025/08/02 00:44:25 [Guide] Dither Settle
+2025/08/02 00:44:35 [Guide] Settle Done
+2025/08/02 00:44:35 Exposure 300.0s image 22#
+2025/08/02 00:49:37 [Guide] Dither
+2025/08/02 00:49:37 [Guide] Dither Settle
+2025/08/02 00:52:25 [Guide] Settle Done
+2025/08/02 00:52:25 Exposure 300.0s image 23#
+2025/08/02 00:57:27 [Guide] Dither
+2025/08/02 00:57:27 [Guide] Dither Settle
+2025/08/02 00:57:41 [Guide] Settle Done
+2025/08/02 00:57:41 Exposure 300.0s image 24#
+2025/08/02 01:02:43 [Guide] Dither
+2025/08/02 01:02:43 [Guide] Dither Settle
+2025/08/02 01:02:51 [Guide] Settle Done
+2025/08/02 01:02:51 Exposure 300.0s image 25#
+2025/08/02 01:07:53 [Guide] Dither
+2025/08/02 01:07:53 [Guide] Dither Settle
+2025/08/02 01:08:05 [Guide] Settle Done
+2025/08/02 01:08:05 Exposure 300.0s image 26#
+2025/08/02 01:13:07 [Guide] Dither
+2025/08/02 01:13:07 [Guide] Dither Settle
+2025/08/02 01:13:16 [Guide] Settle Done
+2025/08/02 01:13:16 Exposure 300.0s image 27#
+2025/08/02 01:18:18 [Guide] Dither
+2025/08/02 01:18:18 [Guide] Dither Settle
+2025/08/02 01:18:28 [Guide] Settle Done
+2025/08/02 01:18:28 Exposure 300.0s image 28#
+2025/08/02 01:23:30 [Guide] Dither
+2025/08/02 01:23:30 [Guide] Dither Settle
+2025/08/02 01:26:53 [Guide] Settle Done
+2025/08/02 01:26:53 Exposure 300.0s image 29#
+2025/08/02 01:31:55 [Guide] Dither
+2025/08/02 01:31:55 [Guide] Dither Settle
+2025/08/02 01:32:04 [Guide] Settle Done
+2025/08/02 01:32:04 Exposure 300.0s image 30#
+2025/08/02 01:37:06 [Guide] Dither
+2025/08/02 01:37:06 [Guide] Dither Settle
+2025/08/02 01:37:17 [Guide] Settle Done
+2025/08/02 01:37:17 Exposure 300.0s image 31#
+2025/08/02 01:42:19 [Guide] Dither
+2025/08/02 01:42:19 [Guide] Dither Settle
+2025/08/02 01:42:29 [Guide] Settle Done
+2025/08/02 01:42:29 Exposure 300.0s image 32#
+2025/08/02 01:47:31 [Guide] Dither
+2025/08/02 01:47:31 [Guide] Dither Settle
+2025/08/02 01:47:39 [Guide] Settle Done
+2025/08/02 01:47:39 Exposure 300.0s image 33#
+2025/08/02 01:52:41 [Guide] Dither
+2025/08/02 01:52:41 [Guide] Dither Settle
+2025/08/02 01:52:52 [Guide] Settle Done
+2025/08/02 01:52:52 Exposure 300.0s image 34#
+2025/08/02 01:57:54 [Guide] Dither
+2025/08/02 01:57:54 [Guide] Dither Settle
+2025/08/02 01:58:03 [Guide] Settle Done
+2025/08/02 01:58:03 Exposure 300.0s image 35#
+2025/08/02 02:03:05 [Guide] Dither
+2025/08/02 02:03:05 [Guide] Dither Settle
+2025/08/02 02:03:14 [Guide] Settle Done
+2025/08/02 02:03:15 Exposure 300.0s image 36#
+2025/08/02 02:08:16 [Guide] Dither
+2025/08/02 02:08:17 [Guide] Dither Settle
+2025/08/02 02:08:26 [Guide] Settle Done
+2025/08/02 02:08:26 Exposure 300.0s image 37#
+2025/08/02 02:13:28 [Guide] Dither
+2025/08/02 02:13:28 [Guide] Dither Settle
+2025/08/02 02:13:39 [Guide] Settle Done
+2025/08/02 02:13:39 Start Tracking
+2025/08/02 02:13:39 [Guide] Stop Guiding
+2025/08/02 02:13:39 [AutoFocus|Begin] Run AF when temperature changed 2 degrees, 19.2℃ changed to 17.1℃, exposure 2.0s Bin1, temperature 17.1℃
+2025/08/02 02:13:39 Find Focus Star
+2025/08/02 02:13:46 Find Focus Star: detect and calculate star size 3.6 ,  EAF position 26920
+2025/08/02 02:13:46 Find Focus Star: finding appropriate stars star size 3.6
+2025/08/02 02:14:01 Find Focus Star: detect and calculate star size 14.9 ,  EAF position 27070
+2025/08/02 02:14:01 Calculate V-Curve
+2025/08/02 02:14:07 Calculate V-Curve: detect and calculate star size 15.2 ,  EAF position 27070
+2025/08/02 02:14:14 Calculate V-Curve: detect and calculate star size 11.8 ,  EAF position 27040
+2025/08/02 02:14:21 Calculate V-Curve: detect and calculate star size 8.2 ,  EAF position 27010
+2025/08/02 02:14:28 Calculate V-Curve: detect and calculate star size 4.7 ,  EAF position 26980
+2025/08/02 02:14:35 Calculate V-Curve: detect and calculate star size 3.1 ,  EAF position 26950
+2025/08/02 02:14:42 Calculate V-Curve: detect and calculate star size 3.6 ,  EAF position 26920
+2025/08/02 02:14:49 Calculate V-Curve: detect and calculate star size 5.9 ,  EAF position 26890
+2025/08/02 02:14:55 Calculate V-Curve: detect and calculate star size 9.6 ,  EAF position 26860
+2025/08/02 02:15:02 Calculate V-Curve: detect and calculate star size 12.6 ,  EAF position 26830
+2025/08/02 02:15:11 Find Focus Point
+2025/08/02 02:15:18 Calculate Focus Point: detect and calculate star size 6.9 ,  EAF position 27001
+2025/08/02 02:15:24 Calculate Focus Point: detect and calculate star size 5.3 ,  EAF position 26986
+2025/08/02 02:15:31 Calculate Focus Point: detect and calculate star size 4.1 ,  EAF position 26971
+2025/08/02 02:15:38 Calculate Focus Point: detect and calculate star size 3.3 ,  EAF position 26956
+2025/08/02 02:15:45 Calculate Focus Point: detect and calculate star size 3.1 ,  EAF position 26941
+2025/08/02 02:15:45 Auto focus succeeded, the focused position is 26941
+2025/08/02 02:15:45 [AutoFocus|End] Auto focus succeeded
+2025/08/02 02:15:46 [Guide] ReSelect Guide star
+2025/08/02 02:15:47 [Guide] Start Guiding
+2025/08/02 02:15:48 [Guide] Guide Settle
+2025/08/02 02:15:53 [Guide] Settle Done
+2025/08/02 02:15:53 Exposure 300.0s image 38#
+2025/08/02 02:20:55 [Guide] Dither
+2025/08/02 02:20:55 [Guide] Dither Settle
+2025/08/02 02:21:05 [Guide] Settle Done
+2025/08/02 02:21:05 Exposure 300.0s image 39#
+2025/08/02 02:26:07 [Guide] Dither
+2025/08/02 02:26:07 [Guide] Dither Settle
+2025/08/02 02:26:18 [Guide] Settle Done
+2025/08/02 02:26:18 Exposure 300.0s image 40#
+2025/08/02 02:31:20 [Guide] Dither
+2025/08/02 02:31:20 [Guide] Dither Settle
+2025/08/02 02:31:31 [Guide] Settle Done
+2025/08/02 02:31:31 Exposure 300.0s image 41#
+2025/08/02 02:36:33 [Guide] Dither
+2025/08/02 02:36:33 [Guide] Dither Settle
+2025/08/02 02:36:40 [Guide] Settle Done
+2025/08/02 02:36:40 Exposure 300.0s image 42#
+2025/08/02 02:41:42 [Guide] Dither
+2025/08/02 02:41:42 [Guide] Dither Settle
+2025/08/02 02:41:52 [Guide] Settle Done
+2025/08/02 02:41:53 Exposure 300.0s image 43#
+2025/08/02 02:46:55 [Guide] Dither
+2025/08/02 02:46:55 [Guide] Dither Settle
+2025/08/02 02:47:06 [Guide] Settle Done
+2025/08/02 02:47:06 Exposure 300.0s image 44#
+2025/08/02 02:52:08 [Guide] Dither
+2025/08/02 02:52:08 [Guide] Dither Settle
+2025/08/02 02:52:18 [Guide] Settle Done
+2025/08/02 02:52:18 Exposure 300.0s image 45#
+2025/08/02 02:57:20 [Guide] Dither
+2025/08/02 02:57:20 [Guide] Dither Settle
+2025/08/02 02:57:32 [Guide] Settle Done
+2025/08/02 02:57:32 Exposure 300.0s image 46#
+2025/08/02 03:02:34 [Guide] Dither
+2025/08/02 03:02:34 [Guide] Dither Settle
+2025/08/02 03:02:41 [Guide] Settle Done
+2025/08/02 03:02:41 Exposure 300.0s image 47#
+2025/08/02 03:07:43 [Guide] Dither
+2025/08/02 03:07:43 [Guide] Dither Settle
+2025/08/02 03:07:54 [Guide] Settle Done
+2025/08/02 03:07:54 Exposure 300.0s image 48#
+2025/08/02 03:12:56 [Guide] Dither
+2025/08/02 03:12:56 [Guide] Dither Settle
+2025/08/02 03:13:10 [Guide] Settle Done
+2025/08/02 03:13:10 Exposure 300.0s image 49#
+2025/08/02 03:18:12 [Guide] Dither
+2025/08/02 03:18:12 [Guide] Dither Settle
+2025/08/02 03:18:31 [Guide] Settle Done
+2025/08/02 03:18:31 Exposure 300.0s image 50#
+2025/08/02 03:23:33 [Guide] Dither
+2025/08/02 03:23:33 [Guide] Dither Settle
+2025/08/02 03:23:50 [Guide] Settle Done
+2025/08/02 03:23:50 Exposure 300.0s image 51#
+2025/08/02 03:28:52 [Guide] Dither
+2025/08/02 03:28:52 [Guide] Dither Settle
+2025/08/02 03:28:59 [Guide] Settle Done
+2025/08/02 03:28:59 Exposure 300.0s image 52#
+2025/08/02 03:34:01 [Guide] Dither
+2025/08/02 03:34:01 [Guide] Dither Settle
+2025/08/02 03:34:09 [Guide] Settle Done
+2025/08/02 03:34:09 Exposure 300.0s image 53#
+2025/08/02 03:39:11 [Guide] Dither
+2025/08/02 03:39:11 [Guide] Dither Settle
+2025/08/02 03:39:23 [Guide] Settle Done
+2025/08/02 03:39:23 Exposure 300.0s image 54#
+2025/08/02 03:44:25 [Guide] Dither
+2025/08/02 03:44:25 [Guide] Dither Settle
+2025/08/02 03:45:17 [Guide] Stop Guiding
+2025/08/02 03:45:17 [Autorun|End] Pause Autorun
+2025/08/02 03:45:17 Plan NGC281 has reached the preset end time point : Astronomical morning light
+2025/08/02 03:45:17 Turn Off Cooling
+2025/08/02 03:45:17 [Guide] Stop Looping
+2025/08/02 03:45:17 Stop Tracking
+2025/08/02 03:45:33 Mount GoTo Home POS
+Log disabled at 2025/08/02 03:45:33
+Log enabled at 2025/08/02 07:18:17
+2025/08/02 07:18:17 [Autorun|Begin] FOV Start
+2025/08/02 07:18:17 Target RA:2h51m58s DEC:+45°30'43"
+2025/08/02 07:18:24 Exposure 158.3ms image 1#
+2025/08/02 07:18:25 Exposure 158.3ms image 2#
+2025/08/02 07:18:27 Exposure 158.3ms image 3#
+2025/08/02 07:18:29 Exposure 158.3ms image 4#
+2025/08/02 07:18:31 Exposure 158.3ms image 5#
+2025/08/02 07:18:33 Exposure 158.3ms image 6#
+2025/08/02 07:18:35 Exposure 158.3ms image 7#
+2025/08/02 07:18:36 Exposure 158.3ms image 8#
+2025/08/02 07:18:38 Exposure 158.3ms image 9#
+2025/08/02 07:18:40 Exposure 158.3ms image 10#
+2025/08/02 07:18:42 Exposure 158.3ms image 11#
+2025/08/02 07:18:44 Exposure 158.3ms image 12#
+2025/08/02 07:18:45 Exposure 158.3ms image 13#
+2025/08/02 07:18:47 Exposure 158.3ms image 14#
+2025/08/02 07:18:49 Exposure 158.3ms image 15#
+2025/08/02 07:18:51 Exposure 158.3ms image 16#
+2025/08/02 07:18:53 Exposure 158.3ms image 17#
+2025/08/02 07:18:54 Exposure 158.3ms image 18#
+2025/08/02 07:18:56 Exposure 158.3ms image 19#
+2025/08/02 07:18:58 Exposure 158.3ms image 20#
+2025/08/02 07:19:00 Exposure 158.3ms image 21#
+2025/08/02 07:19:02 Exposure 158.3ms image 22#
+2025/08/02 07:19:04 Exposure 158.3ms image 23#
+2025/08/02 07:19:05 Exposure 158.3ms image 24#
+2025/08/02 07:19:07 Exposure 158.3ms image 25#
+2025/08/02 07:19:09 Exposure 158.3ms image 26#
+2025/08/02 07:19:11 Exposure 158.3ms image 27#
+2025/08/02 07:19:13 Exposure 158.3ms image 28#
+2025/08/02 07:19:15 Exposure 158.3ms image 29#
+2025/08/02 07:19:17 Exposure 158.3ms image 30#
+2025/08/02 07:19:18 Exposure 158.3ms image 31#
+2025/08/02 07:19:20 Exposure 158.3ms image 32#
+2025/08/02 07:19:22 Exposure 158.3ms image 33#
+2025/08/02 07:19:24 Exposure 158.3ms image 34#
+2025/08/02 07:19:26 Stop Autorun Manually
+2025/08/02 07:19:26 [Autorun|End] Pause Autorun
+Log disabled at 2025/08/02 07:19:26
+Log enabled at 2025/08/02 07:21:55
+2025/08/02 07:21:55 [Autorun|Begin] FOV Start
+2025/08/02 07:21:55 Target RA:2h51m58s DEC:+45°30'43"
+2025/08/02 07:22:01 Exposure 516.7ms image 1#
+2025/08/02 07:22:03 Exposure 516.7ms image 2#
+2025/08/02 07:22:05 Exposure 516.7ms image 3#
+2025/08/02 07:22:08 Exposure 516.7ms image 4#
+2025/08/02 07:22:10 Exposure 516.7ms image 5#
+2025/08/02 07:22:12 Exposure 516.7ms image 6#
+2025/08/02 07:22:14 Exposure 516.7ms image 7#
+2025/08/02 07:22:16 Exposure 516.7ms image 8#
+2025/08/02 07:22:18 Exposure 516.7ms image 9#
+2025/08/02 07:22:21 Exposure 516.7ms image 10#
+2025/08/02 07:22:23 Exposure 516.7ms image 11#
+2025/08/02 07:22:25 Exposure 516.7ms image 12#
+2025/08/02 07:22:27 Exposure 516.7ms image 13#
+2025/08/02 07:22:29 Exposure 516.7ms image 14#
+2025/08/02 07:22:32 Exposure 516.7ms image 15#
+2025/08/02 07:22:34 Exposure 516.7ms image 16#
+2025/08/02 07:22:36 Exposure 516.7ms image 17#
+2025/08/02 07:22:38 Exposure 516.7ms image 18#
+2025/08/02 07:22:40 Exposure 516.7ms image 19#
+2025/08/02 07:22:43 Exposure 516.7ms image 20#
+2025/08/02 07:22:45 Exposure 516.7ms image 21#
+2025/08/02 07:22:47 Exposure 516.7ms image 22#
+2025/08/02 07:22:49 Exposure 516.7ms image 23#
+2025/08/02 07:22:51 Exposure 516.7ms image 24#
+2025/08/02 07:22:54 Exposure 516.7ms image 25#
+2025/08/02 07:22:56 Exposure 516.7ms image 26#
+2025/08/02 07:22:58 Exposure 516.7ms image 27#
+2025/08/02 07:23:00 Exposure 516.7ms image 28#
+2025/08/02 07:23:02 Exposure 516.7ms image 29#
+2025/08/02 07:23:05 Exposure 516.7ms image 30#
+2025/08/02 07:23:07 Exposure 516.7ms image 31#
+2025/08/02 07:23:09 Exposure 516.7ms image 32#
+2025/08/02 07:23:11 Exposure 516.7ms image 33#
+2025/08/02 07:23:13 Exposure 516.7ms image 34#
+2025/08/02 07:23:15 Exposure 516.7ms image 35#
+2025/08/02 07:23:18 Exposure 516.7ms image 36#
+2025/08/02 07:23:20 Exposure 516.7ms image 37#
+2025/08/02 07:23:22 Exposure 516.7ms image 38#
+2025/08/02 07:23:24 Exposure 516.7ms image 39#
+2025/08/02 07:23:26 Exposure 516.7ms image 40#
+2025/08/02 07:23:29 Exposure 516.7ms image 41#
+2025/08/02 07:23:31 Exposure 516.7ms image 42#
+2025/08/02 07:23:33 Exposure 516.7ms image 43#
+2025/08/02 07:23:35 Exposure 516.7ms image 44#
+2025/08/02 07:23:37 Exposure 516.7ms image 45#
+2025/08/02 07:23:40 Exposure 516.7ms image 46#
+2025/08/02 07:23:42 Exposure 516.7ms image 47#
+2025/08/02 07:23:44 Exposure 516.7ms image 48#
+2025/08/02 07:23:46 Exposure 516.7ms image 49#
+2025/08/02 07:23:48 Exposure 516.7ms image 50#
+2025/08/02 07:23:51 [Autorun|End] Finish Autorun
+2025/08/02 07:24:10 Mount GoTo Home POS
+2025/08/02 07:24:10 Stop Tracking
+Log disabled at 2025/08/02 07:24:10
