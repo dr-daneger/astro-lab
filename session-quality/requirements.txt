@@ -1,0 +1,9 @@
+numpy>=1.19.0
+pandas>=1.1.0
+matplotlib>=3.3.0
+astropy>=4.0.0
+scipy>=1.5.0
+sep>=1.2.0
+tqdm>=4.62.0
+pyyaml>=5.4.0
+rich>=10.0.0

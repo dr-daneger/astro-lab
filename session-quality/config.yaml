@@ -1,0 +1,26 @@
+phd2:
+  # Guide camera settings
+  pixel_scale_arcsec: 6.45  # arcsec per pixel
+  pixel_size_um: 3.8       # microns per pixel
+  
+  # Log file settings
+  autorun_log_prefix: "Autorun_Log"
+  phd2_log_prefix: "PHD2_GuideLog"
+  log_extension: ".txt"
+
+autofocus:
+  # Autofocus settings
+  min_stars: 10            # Minimum number of stars for valid focus
+  max_hfr: 5.0            # Maximum Half Flux Radius in pixels
+  curve_fit_points: 7      # Number of points to use in curve fitting
+
+altaz:
+  # Observer location (update for your location)
+  latitude: 45.5145        # degrees North
+  longitude: -122.848      # degrees East (negative for West)
+  elevation: 60.0          # meters above sea level
+  timezone: "America/Los_Angeles"
+  
+  # Analysis settings
+  min_altitude: 30.0       # Minimum altitude in degrees
+  time_resolution: 1.0     # Time resolution in minutes
