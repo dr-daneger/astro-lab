@@ -1,0 +1,128 @@
+{
+  "imaging_telescope": {
+    "model": "Apertura 75Q Refractor Telescope",
+    "specs": {
+      "optical_design": "Refractor",
+      "aperture_mm": 75,
+      "focal_length_mm": 405,
+      "focal_ratio": 5.4,
+      "image_circle_mm": 44
+    }
+  },
+  "imaging_camera": {
+    "model": "ZWO ASI585MC Pro USB3 Cooled Color Camera",
+    "specs": {
+      "sensor_type": "CMOS",
+      "sensor_manufacturer": "Sony",
+      "illumination_type": "Back Illuminated",
+      "sensor_width_mm": 11.2,
+      "sensor_height_mm": 6.3,
+      "sensor_diagonal_mm": 12.85,
+      "pixel_size_microns": 2.9,
+      "resolution_width_px": 3840,
+      "resolution_height_px": 2160,
+      "quantum_efficiency_percent": 91,
+      "read_noise_e": 0.9,
+      "full_well_e": 47000,
+      "bit_depth": 12,
+      "cooled": true,
+      "camera_type": "color"
+    }
+  },
+  "filter": {
+    "model": "Optolong Dual Narrowband Filter",
+    "specs": {
+      "Filter Type": "Multi/Dual Narrow Bandpass",
+      "Filter Size": "50.8mm (2\")",
+      "Filter Shape": "Round",
+      "Filter Insert Style": "Threaded",
+      "Filter Bandwidth/Bandpass": "7 nm",
+      "Filter Optical Thickness": "1.85 mm"
+    }
+  },
+  "focuser": {
+    "model": "ZWO EAF (Electronic Automatic Focuser)",
+    "specs": {
+        "Motor": "35mm Stepper Motor",
+        "Subdivision Steps": 5760,
+        "Reduction Ratio": 120,
+        "Payload Limit kg": 5,
+        "Data Interface": "USB 2.0",
+        "Weight g": 277
+    }
+  },
+  "guide_scope": {
+    "model": "UniGuide 32mm f/3.75 Guide Scope",
+    "specs": {
+      "optical_design": "Refractor",
+      "aperture_mm": 32,
+      "focal_length_mm": 120,
+      "focal_ratio": 3.75
+    }
+  },
+  "guide_camera": {
+    "model": "ZWO ASI120MM Mini Monochrome Astronomy Camera",
+    "specs": {
+      "sensor_type": "CMOS",
+      "sensor_manufacturer": "ON Semiconductor",
+      "illumination_type": "Front Illuminated",
+      "sensor_width_mm": 4.8,
+      "sensor_height_mm": 3.6,
+      "sensor_diagonal_mm": 6.0,
+      "pixel_size_microns": 3.75,
+      "resolution_width_px": 1280,
+      "resolution_height_px": 960,
+      "quantum_efficiency_percent": 80,
+      "read_noise_e": 4.0,
+      "full_well_e": 13000,
+      "bit_depth": 12,
+      "cooled": false,
+      "camera_type": "monochrome"
+    }
+  },
+  "mount": {
+    "model": "ZWO AM5N Harmonic Drive Equatorial Mount Head (2024 Version)",
+    "specs": {
+        "Mount Type": "Dual Alt-Az/Equatorial Harmonic Drive",
+        "Type of Mount Electronics": "Computerized - GoTo",
+        "Weight Capacity lb": {
+            "without_counterweight": 33,
+            "with_counterweight": 44.09
+        },
+        "Power Requirements": "12V - 3A",
+        "Stepper Motor Resolution arcsec": 0.17,
+        "Latitude Range deg": "0-90",
+        "Integrated WiFi": true,
+        "Accessory Ports": ["USB", "ST4"],
+        "Periodic Error Correction": true,
+        "Periodic Error Duration sec": 288,
+        "Saddle Type": "Dual - Vixen or Losmandy",
+        "Mount Weight lb": 12.1
+    }
+  },
+  "tripod": {
+    "model": "iOptron 1.25in Stainless Steel Tripod",
+    "specs": {
+        "Material": ["Aluminum", "Stainless Steel"],
+        "Height Adjustment Range inches": "24.5-42.5",
+        "Leg Diameter inches": 1.25
+    }
+  },
+  "control_computer": {
+    "model": "ZWO ASIAIR Mini Astronomy WiFi Smart Device",
+    "specs": {
+      "internal_storage_GB": 32,
+      "usb_ports": "4 x USB 2.0",
+      "dc_power_outputs": "4 x 12V DC",
+      "weight_g": 165,
+      "build_material": "CNC machined anodized aluminum",
+      "features": [
+        "Wireless control via ASIAIR app",
+        "Real-time power monitoring",
+        "DSLR shutter release port",
+        "Supports live stacking",
+        "Multi-target mode and auto-guiding integration"
+      ]
+    }
+  }
+}
