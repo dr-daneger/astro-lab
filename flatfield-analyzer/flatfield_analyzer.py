@@ -17,6 +17,7 @@ Usage:
 Author: Dane
 """
 
+import csv
 import sys
 import os
 import re
@@ -85,6 +86,13 @@ class FilterGroup:
     shot_noise_expected: float = 0.0
     residual_fpn: float = 0.0
     noise_ratio: float = 0.0
+    # spatial profiles (populated during analysis)
+    centroid_row: float = 0.0
+    centroid_col: float = 0.0
+    radial_radii: Optional[np.ndarray] = None
+    radial_profile: Optional[np.ndarray] = None
+    row_profile: Optional[np.ndarray] = None
+    col_profile: Optional[np.ndarray] = None
 
 
 # ── helpers ─────────────────────────────────────────────────────────────────
@@ -282,6 +290,7 @@ def analyse_master(group: FilterGroup, sample_header: fits.Header) -> None:
 
     # Illumination centroid & offset
     centroid = _illumination_centroid(m)
+    group.centroid_row, group.centroid_col = centroid
     img_center = (m.shape[0] / 2.0, m.shape[1] / 2.0)
     dy = centroid[0] - img_center[0]
     dx = centroid[1] - img_center[1]
@@ -307,6 +316,12 @@ def analyse_master(group: FilterGroup, sample_header: fits.Header) -> None:
         else 0.0
     )
 
+    # Spatial profiles (stored for CSV export)
+    norm_master = m / m.max()
+    group.radial_radii, group.radial_profile = _radial_profile(norm_master, centroid)
+    group.row_profile = np.median(m, axis=1)
+    group.col_profile = np.median(m, axis=0)
+
 
 # ── plotting ────────────────────────────────────────────────────────────────
 def _cmap():
@@ -318,9 +333,9 @@ def plot_filter_report(group: FilterGroup, sample_header: fits.Header,
     """Multi-panel diagnostic figure for one filter."""
     m = group.master
     norm_master = m / m.max()
-    centroid = _illumination_centroid(m)
+    centroid = (group.centroid_row, group.centroid_col)
     img_center = (m.shape[0] / 2.0, m.shape[1] / 2.0)
-    radii, profile = _radial_profile(norm_master, centroid)
+    radii, profile = group.radial_radii, group.radial_profile
 
     fig = plt.figure(figsize=(20, 16))
     fig.suptitle(
@@ -350,7 +365,7 @@ def plot_filter_report(group: FilterGroup, sample_header: fits.Header,
 
     # ── panel 3: row median profile ──────────────────────────────────────
     ax3 = fig.add_subplot(gs[1, 0])
-    row_profile = np.median(m, axis=1)
+    row_profile = group.row_profile
     ax3.plot(row_profile, np.arange(m.shape[0]), "b-", linewidth=0.5)
     ax3.set_xlabel("Median ADU")
     ax3.set_ylabel("Row")
@@ -360,7 +375,7 @@ def plot_filter_report(group: FilterGroup, sample_header: fits.Header,
 
     # ── panel 4: column median profile ───────────────────────────────────
     ax4 = fig.add_subplot(gs[1, 1])
-    col_profile = np.median(m, axis=0)
+    col_profile = group.col_profile
     ax4.plot(np.arange(m.shape[1]), col_profile, "r-", linewidth=0.5)
     ax4.set_xlabel("Column")
     ax4.set_ylabel("Median ADU")
@@ -564,6 +579,124 @@ def print_diagnostic_table(groups: Dict[str, FilterGroup]) -> None:
     print()
 
 
+# ── CSV / FITS exports ──────────────────────────────────────────────────────
+def save_per_frame_csv(groups: Dict[str, FilterGroup], out_dir: Path) -> None:
+    """One row per individual flat frame."""
+    path = out_dir / "per_frame_stats.csv"
+    with open(path, "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["filter", "filename", "mean", "median", "std", "min", "max", "snr"])
+        for filt in sorted(groups):
+            for s in groups[filt].frame_stats:
+                w.writerow([
+                    filt, s.filename,
+                    f"{s.mean:.2f}", f"{s.median:.2f}", f"{s.std:.2f}",
+                    f"{s.min:.2f}", f"{s.max:.2f}", f"{s.snr:.2f}",
+                ])
+    print(f"  Saved {path.name}")
+
+
+def save_filter_summary_csv(groups: Dict[str, FilterGroup], out_dir: Path) -> None:
+    """One row per filter with all master-level diagnostics."""
+    path = out_dir / "filter_summary.csv"
+    with open(path, "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow([
+            "filter", "n_frames",
+            "master_mean", "master_median", "master_std", "master_min", "master_max",
+            "adu_status", "corner_center_ratio", "peak_valley_nonuniformity",
+            "centroid_row_px", "centroid_col_px",
+            "centroid_offset_px", "centroid_offset_arcsec",
+            "plate_scale_arcsec_px",
+            "shot_noise_expected", "residual_fpn", "noise_ratio",
+        ])
+        for filt in sorted(groups):
+            g = groups[filt]
+            w.writerow([
+                filt, len(g.files),
+                f"{g.master_mean:.2f}", f"{g.master_median:.2f}",
+                f"{g.master_std:.2f}", f"{g.master_min:.2f}", f"{g.master_max:.2f}",
+                g.adu_status, f"{g.corner_center_ratio:.6f}",
+                f"{g.peak_valley_nonuniformity:.6f}",
+                f"{g.centroid_row:.2f}", f"{g.centroid_col:.2f}",
+                f"{g.centroid_offset_px:.2f}",
+                f"{g.centroid_offset_arcsec:.2f}" if g.centroid_offset_arcsec is not None else "",
+                f"{g.plate_scale:.4f}" if g.plate_scale is not None else "",
+                f"{g.shot_noise_expected:.2f}", f"{g.residual_fpn:.2f}",
+                f"{g.noise_ratio:.4f}",
+            ])
+    print(f"  Saved {path.name}")
+
+
+def save_spatial_profiles_csv(groups: Dict[str, FilterGroup], out_dir: Path) -> None:
+    """Radial, row, and column profiles for each filter — one CSV per filter."""
+    profiles_dir = out_dir / "spatial_profiles"
+    profiles_dir.mkdir(exist_ok=True)
+
+    for filt in sorted(groups):
+        g = groups[filt]
+
+        # Radial profile
+        path = profiles_dir / f"radial_profile_{filt}.csv"
+        with open(path, "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["radius_px", "normalized_intensity"])
+            for r, v in zip(g.radial_radii, g.radial_profile):
+                w.writerow([f"{r:.2f}", f"{v:.6f}"])
+
+        # Row profile (median ADU collapsed along columns)
+        path = profiles_dir / f"row_profile_{filt}.csv"
+        with open(path, "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["row", "median_adu"])
+            for i, v in enumerate(g.row_profile):
+                w.writerow([i, f"{v:.2f}"])
+
+        # Column profile (median ADU collapsed along rows)
+        path = profiles_dir / f"col_profile_{filt}.csv"
+        with open(path, "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["col", "median_adu"])
+            for i, v in enumerate(g.col_profile):
+                w.writerow([i, f"{v:.2f}"])
+
+    print(f"  Saved spatial profiles to {profiles_dir.name}/")
+
+
+def save_master_fits(group: FilterGroup, sample_header: fits.Header,
+                     out_dir: Path) -> None:
+    """Write the median-stacked master flat as a FITS file with diagnostic headers."""
+    masters_dir = out_dir / "master_flats"
+    masters_dir.mkdir(exist_ok=True)
+
+    hdr = sample_header.copy()
+    # Add analysis metadata
+    hdr["IMAGETYP"] = "Master Flat"
+    hdr["NCOMBINE"] = (len(group.files), "number of frames median-stacked")
+    hdr["MSTR_MN"] = (round(group.master_mean, 2), "master mean ADU")
+    hdr["MSTR_MD"] = (round(group.master_median, 2), "master median ADU")
+    hdr["MSTR_SD"] = (round(group.master_std, 2), "master std ADU")
+    hdr["CORNCTRT"] = (round(group.corner_center_ratio, 6), "corner-to-center ratio")
+    hdr["PV_NONUN"] = (round(group.peak_valley_nonuniformity, 6), "(max-min)/mean non-uniformity")
+    hdr["CENT_ROW"] = (round(group.centroid_row, 2), "illumination centroid row px")
+    hdr["CENT_COL"] = (round(group.centroid_col, 2), "illumination centroid col px")
+    hdr["CENTOFFP"] = (round(group.centroid_offset_px, 2), "centroid offset from center px")
+    if group.centroid_offset_arcsec is not None:
+        hdr["CENTOFFS"] = (round(group.centroid_offset_arcsec, 2), "centroid offset arcsec")
+    hdr["SHOTNOIS"] = (round(group.shot_noise_expected, 2), "expected shot noise ADU")
+    hdr["RES_FPN"] = (round(group.residual_fpn, 2), "residual fixed-pattern noise ADU")
+    hdr["NOISERAT"] = (round(group.noise_ratio, 4), "FPN / shot noise ratio")
+    hdr["ADUSTAT"] = (group.adu_status, "ADU target assessment")
+    # Record constituent filenames (up to 50 to avoid header overflow)
+    for i, fp in enumerate(group.files[:50]):
+        hdr[f"FLAT{i:04d}"] = (fp.stem[:60], f"flat #{i+1}")
+
+    path = masters_dir / f"master_flat_{group.filter_name}.fits"
+    hdu = fits.PrimaryHDU(data=group.master.astype(np.float32), header=hdr)
+    hdu.writeto(path, overwrite=True)
+    print(f"  Saved {path.name}")
+
+
 # ── main ────────────────────────────────────────────────────────────────────
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -594,19 +727,27 @@ def main() -> None:
     groups = discover_files(flats_dir)
 
     # 2. Per-filter analysis
+    sample_headers: Dict[str, fits.Header] = {}
     for filt, group in sorted(groups.items()):
-        # grab a sample header for metadata
         _, sample_header = _read_flat(group.files[0])
+        sample_headers[filt] = sample_header
 
         compute_per_frame_stats(group)
         build_master(group)
         analyse_master(group, sample_header)
         plot_filter_report(group, sample_header, out_dir)
+        save_master_fits(group, sample_header, out_dir)
 
     # 3. Cross-filter summary
     plot_summary(groups, out_dir)
 
-    # 4. Console output
+    # 4. CSV exports
+    print("\nExporting CSVs...")
+    save_per_frame_csv(groups, out_dir)
+    save_filter_summary_csv(groups, out_dir)
+    save_spatial_profiles_csv(groups, out_dir)
+
+    # 5. Console output
     print_diagnostic_table(groups)
 
     elapsed = time.time() - t0
