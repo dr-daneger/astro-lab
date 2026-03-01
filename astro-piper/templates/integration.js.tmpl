@@ -1,0 +1,48 @@
+#include <pjsr/DataType.jsh>
+
+// ImageIntegration -- Phase 1 stacking
+
+var P = new ImageIntegration;
+
+P.images = [
+      [true, "E:/AstroPipeline/NGC1499/working/registered/NGC1499_Ha_001_c_r.xisf", ""],
+      [true, "E:/AstroPipeline/NGC1499/working/registered/NGC1499_Ha_002_c_r.xisf", ""],
+      [true, "E:/AstroPipeline/NGC1499/working/registered/NGC1499_Ha_003_c_r.xisf", ""],
+      [true, "E:/AstroPipeline/NGC1499/working/registered/NGC1499_Ha_004_c_r.xisf", ""],
+      [true, "E:/AstroPipeline/NGC1499/working/registered/NGC1499_Ha_005_c_r.xisf", ""]
+   ];
+
+P.combination             = ImageIntegration.prototype.Average;
+P.weightMode              = ImageIntegration.prototype.NoiseEvaluation;
+P.weightKeyword           = "SSWEIGHT";
+P.normalization           = ImageIntegration.prototype.AdditiveWithScaling;
+
+P.rejection               = ImageIntegration.prototype.ESD;
+P.rejectionNormalization  = ImageIntegration.prototype.Scale;
+P.sigmaLow                = 4.000;
+P.sigmaHigh               = 3.000;
+P.linearFitLow            = 5.000;
+P.linearFitHigh           = 2.500;
+P.esdOutliersFraction     = 0.300;
+P.esdSignificance         = 0.050;
+P.esdLowRelaxation        = 2.000;
+
+P.pcClipLow               = 0.200;
+P.pcClipHigh              = 0.100;
+P.minMaxLow               = 1;
+P.minMaxHigh              = 1;
+
+P.generateIntegratedImage = true;
+P.generateDrizzleData     = false;
+
+P.outputDirectory         = "E:/AstroPipeline/NGC1499/working";
+P.outputData              = ImageIntegration.prototype.XISF;
+
+P.executeGlobal();
+
+// Rename the auto-generated output to the desired filename
+var integratedId = P.integrationImageId;
+var wInt = ImageWindow.windowById(integratedId);
+wInt.saveAs("E:/AstroPipeline/NGC1499/working/NGC1499_Ha_master.xisf", false, false, false, false);
+wInt.forceClose();
+Console.writeln("ImageIntegration complete -- master saved to: E:/AstroPipeline/NGC1499/working/NGC1499_Ha_master.xisf");

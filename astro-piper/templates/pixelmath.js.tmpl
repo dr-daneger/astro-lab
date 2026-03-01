@@ -1,0 +1,45 @@
+#include <pjsr/DataType.jsh>
+
+// Foraxx dynamic SHO palette -- Phase 3 palette combination
+
+// Open all three channels with view IDs matching the PixelMath expressions
+var wHa = ImageWindow.open("E:/AstroPipeline/NGC1499/working/NGC1499_Ha_starless_stretched.xisf")[0];
+wHa.currentView.id = "Ha";
+var wSii = ImageWindow.open("E:/AstroPipeline/NGC1499/working/NGC1499_SII_starless_stretched.xisf")[0];
+wSii.currentView.id = "Sii";
+var wOiii = ImageWindow.open("E:/AstroPipeline/NGC1499/working/NGC1499_OIII_starless_stretched.xisf")[0];
+wOiii.currentView.id = "Oiii";
+
+var PM = new PixelMath;
+
+// Foraxx dynamic SHO expressions:
+//   ~ = (1-x)  [Inverted Pixels]
+//   ^ = power operator
+//   R: PIP(Oiii) * Sii + (1-PIP(Oiii)) * Ha
+//   G: PIP(Oiii*Ha) * Ha + (1-PIP(Oiii*Ha)) * Oiii
+//   B: Oiii
+PM.expression  = "(Oiii^~Oiii)*Sii + ~(Oiii^~Oiii)*Ha";
+PM.expression1 = "((Oiii*Ha)^~(Oiii*Ha))*Ha + ~((Oiii*Ha)^~(Oiii*Ha))*Oiii";
+PM.expression2 = "Oiii";
+PM.expression3 = "";
+
+PM.useSingleExpression  = false;
+PM.createNewImage       = true;
+PM.newImageId           = "SHO_Foraxx";
+PM.newImageWidth        = 0;           // 0 = match first operand dimensions
+PM.newImageHeight       = 0;
+PM.newImageColorSpace   = PixelMath.prototype.RGB;
+PM.newImageSampleFormat = PixelMath.prototype.SameAsTarget;
+
+PM.executeGlobal();
+
+// Save and close the result
+var wOut = ImageWindow.windowById("SHO_Foraxx");
+wOut.saveAs("E:/AstroPipeline/NGC1499/working/NGC1499_SHO_foraxx.xisf", false, false, false, false);
+wOut.forceClose();
+
+// Close input images
+wHa.forceClose();
+wSii.forceClose();
+wOiii.forceClose();
+Console.writeln("Foraxx palette combination complete.");
