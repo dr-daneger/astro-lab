@@ -750,8 +750,8 @@ def generate_image_integration(
         20-50 subs:  "LinearFitClip" or "ESD"
         50+ subs:    "ESD"  (recommended, with esd_low_relaxation=2.0 for NB)
 
-    Large-scale rejection (satellite trails) is enabled by default via
-    the separate generate_large_scale_rejection_script() if needed.
+    Large-scale rejection (satellite trails) is enabled via the
+    large_scale_rejection parameter.
 
     Args:
         image_paths:             Registered light frame paths.
@@ -781,7 +781,6 @@ def generate_image_integration(
 
     images_js = js_integration_images(image_paths, drizzle_paths)
     out_dir   = pjsr_path(str(Path(output_path).parent))
-    out_stem  = Path(output_path).stem
 
     rej_norm_int = _II_REJECTION_NORM["Scale"]
 
@@ -1096,14 +1095,9 @@ def generate_noise_xterminator(
     NXT must always be applied AFTER BXT -- never before deconvolution.
     Deconvolution algorithms require intact noise statistics for regularization.
 
-    Used twice:
-        Linear stage  (Phase 2): denoise=0.80, detail=0.15 -- aggressive NB cleaning
-        Nonlinear stage (Phase 4): denoise=0.40, detail=0.15 -- light touch post-stretch
-
-    Per-channel tuning for NGC 1499 (design_doc.md Section 12):
-        Ha:   denoise=0.70  (highest SNR, least NR needed)
-        SII:  denoise=0.80
-        OIII: denoise=0.87  (faintest channel, most NR needed)
+    Used in:
+        Linear stage (Phase 2): denoise=0.80, detail=0.15 -- aggressive NB cleaning
+        Phase 4 nonlinear uses GraXpert denoising instead (generate_graxpert_denoise).
 
     Args:
         denoise: Noise reduction strength (0-1). Higher values remove more noise.
