@@ -42,6 +42,7 @@
         "drizzle_drop_shrink":  0.9,
         "drizzle_kernel":       "Square",
         "rejection_algorithm":  "ESD",
+        "rgb_rejection_algorithm": "WinsorizedSigmaClip",
         "esd_significance":     0.05,
         "esd_outliers":         0.30,
         "esd_low_relaxation":   2.0,

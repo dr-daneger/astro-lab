@@ -302,12 +302,13 @@ class LinearFitStage(PipelineStage):
     """
 
     def execute(self, config: dict) -> int:
-        working = Path(config["directories"]["working"])
-        pi_exe  = _get_pi_exe(config)
+        working  = Path(config["directories"]["working"])
+        pi_exe   = _get_pi_exe(config)
+        ref_ch   = config["processing"].get("linear_fit_reference", "OIII")
 
         ha_stretched   = working / "NGC1499_Ha_starless_stretched.xisf"
         sii_stretched  = working / "NGC1499_SII_starless_stretched.xisf"
-        oiii_stretched = working / "NGC1499_OIII_starless_stretched.xisf"
+        ref_stretched  = working / f"NGC1499_{ref_ch}_starless_stretched.xisf"
 
         ha_out  = working / "NGC1499_Ha_starless_linearfit.xisf"
         sii_out = working / "NGC1499_SII_starless_linearfit.xisf"
@@ -317,17 +318,17 @@ class LinearFitStage(PipelineStage):
             return 0
 
         print(
-            f"[stretching] LinearFit: Ha + SII -> OIII reference\n"
-            f"  reference: {oiii_stretched.name}\n"
+            f"[stretching] LinearFit: Ha + SII -> {ref_ch} reference\n"
+            f"  reference: {ref_stretched.name}\n"
             f"  targets:   {ha_stretched.name}, {sii_stretched.name}"
         )
 
         script = generate_linear_fit(
             target_paths=[str(ha_stretched), str(sii_stretched)],
             output_paths=[str(ha_out), str(sii_out)],
-            reference_path=str(oiii_stretched),
+            reference_path=str(ref_stretched),
         )
-        _run_pjsr(script, "LinearFit Ha+SII to OIII", pi_exe, PI_TIMEOUT)
+        _run_pjsr(script, f"LinearFit Ha+SII to {ref_ch}", pi_exe, PI_TIMEOUT)
 
         return 0
 
