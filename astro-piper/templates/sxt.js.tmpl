@@ -1,0 +1,25 @@
+#include <pjsr/DataType.jsh>
+
+// StarXTerminator -- Phase 2/5 star removal
+
+var w = ImageWindow.open("E:/AstroPipeline/NGC1499/working/NGC1499_Ha_processed.xisf")[0];
+var view = w.currentView;
+
+var SXT = new StarXTerminator;
+SXT.stars_image  = true;
+SXT.unscreen     = false;
+SXT.executeOn(view);
+
+// The view now contains the starless image; save it
+w.saveAs("E:/AstroPipeline/NGC1499/working/NGC1499_Ha_starless.xisf", false, false, false, false);
+w.forceClose();
+
+// Save and close the stars-only image created by SXT
+var wStars = ImageWindow.windowById("NGC1499_Ha_processed_stars");
+if (wStars != null && wStars.isNull == false) {
+   ImageWindow.windowById("NGC1499_Ha_processed_stars").saveAs("E:/AstroPipeline/NGC1499/working/NGC1499_Ha_stars.xisf", false, false, false, false);
+   ImageWindow.windowById("NGC1499_Ha_processed_stars").forceClose();
+} else {
+   Console.warningln("SXT: stars-only window not found (ID=NGC1499_Ha_processed_stars).");
+}
+Console.writeln("StarXTerminator complete.");

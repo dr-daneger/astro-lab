@@ -1,0 +1,87 @@
+{
+    "target": {
+        "name": "NGC1499",
+        "common_name": "California Nebula",
+        "ra": "04h03m18s",
+        "dec": "+36d25m18s"
+    },
+    "directories": {
+        "raw_nb":           "C:/Users/Dane/Pictures/DSOs/01_nebulae/NGC1499 - California Nebula/lights",
+        "raw_rgb":          "C:/Users/Dane/Pictures/DSOs/01_nebulae/NGC1499 - California Nebula/lights",
+        "calibration_nb":   "C:/Users/Dane/Pictures/DSOs/01_nebulae/NGC1499 - California Nebula/masters/nb",
+        "calibration_rgb":  "C:/Users/Dane/Pictures/DSOs/01_nebulae/NGC1499 - California Nebula/masters/rgb",
+        "working":          "C:/Users/Dane/Pictures/DSOs/01_nebulae/NGC1499 - California Nebula/pipeline_working",
+        "output":           "C:/Users/Dane/Pictures/DSOs/01_nebulae/NGC1499 - California Nebula/pipeline_output",
+        "archive":          "C:/Users/Dane/Pictures/DSOs/01_nebulae/NGC1499 - California Nebula/pipeline_archive"
+    },
+    "tools": {
+        "pixinsight_exe":   "C:/Program Files/PixInsight/bin/PixInsight.exe",
+        "graxpert_exe":     "C:/Users/Dane/AppData/Local/Programs/GraXpert/GraXpert.EXE"
+    },
+    "acquisition": {
+        "nb": {
+            "gain":             100,
+            "offset":           50,
+            "exposure":         300,
+            "temperature":      -20,
+            "filters":          ["Ha", "OIII", "SII"],
+            "filter_bandwidth_nm": 3
+        },
+        "rgb": {
+            "gain":             -25,
+            "offset":           50,
+            "exposure":         10,
+            "temperature":      -20,
+            "filters":          ["R", "G", "B"]
+        }
+    },
+    "preprocessing": {
+        "pedestal":             150,
+        "crop_pixels":          200,
+        "drizzle_scale":        2,
+        "drizzle_drop_shrink":  0.9,
+        "drizzle_kernel":       "Square",
+        "rejection_algorithm":  "ESD",
+        "esd_significance":     0.05,
+        "esd_outliers":         0.30,
+        "esd_low_relaxation":   2.0,
+        "large_scale_rejection": true,
+        "local_normalization":  true
+    },
+    "processing": {
+        "bxt_sharpen_stars":        0.25,
+        "bxt_sharpen_nonstellar":   0.40,
+        "bxt_adjust_halos":         0.05,
+        "graxpert_denoise_strength":        0.5,
+        "graxpert_denoise_batch_size":      4,
+        "graxpert_denoise_strength_ha":     0.40,
+        "graxpert_denoise_strength_sii":    0.50,
+        "graxpert_denoise_strength_oiii":   0.60,
+        "graxpert_denoise_strength_nonlinear": 0.35,
+        "graxpert_smoothing":       0.25,
+        "graxpert_correction":      "Subtraction",
+        "scnr_amount":              0.00,
+        "stretch_target_median":    0.22,
+        "ghs_stretch_factor":       5.0,
+        "ghs_stretch_factor_ha":    4.0,
+        "ghs_stretch_factor_oiii":  7.0,
+        "ghs_stretch_factor_sii":   5.0,
+        "ghs_shape_param":          2.0,
+        "ghs_sp":                   0.0001,
+        "ghs_rgb_stretch_factor":   3.0,
+        "star_brightness_factor":   0.70,
+        "hdrmt_layers":             6,
+        "hdrmt_iterations":         1,
+        "lhe_kernel_radius":        96,
+        "lhe_contrast_limit":       2.0,
+        "lhe_amount":               0.35,
+        "linear_fit_reference":     "OIII"
+    },
+    "breakpoints": {
+        "crop":                 false,
+        "deconvolution_review": false,
+        "stretch_review":       false,
+        "color_grading":        false,
+        "star_recombination":   false
+    }
+}

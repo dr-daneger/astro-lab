@@ -1,0 +1,32 @@
+#include <pjsr/DataType.jsh>
+
+// ImageCalibration -- Phase 1 calibration
+
+var P = new ImageCalibration;
+
+P.targetFrames = [
+      [true, "E:/AstroPipeline/NGC1499/working/raw/NGC1499_Ha_001.xisf"],
+      [true, "E:/AstroPipeline/NGC1499/working/raw/NGC1499_Ha_002.xisf"]
+   ];
+
+P.masterBiasEnabled   = false;
+P.masterBiasPath      = "";
+
+P.masterDarkEnabled   = true;
+P.masterDarkPath      = "E:/AstroPipeline/NGC1499/working/masters/master_dark_300s.xisf";
+P.masterDarkOptimizationLow    = 3.0;
+P.masterDarkOptimizationWindow = 1024;
+
+P.masterFlatEnabled   = true;
+P.masterFlatPath      = "E:/AstroPipeline/NGC1499/working/masters/master_flat_Ha.xisf";
+
+P.outputDirectory     = "E:/AstroPipeline/NGC1499/working/calibrated";
+P.outputExtension     = ".xisf";
+P.outputPostfix       = "_c";
+P.outputSampleFormat  = ImageCalibration.prototype.f32;
+P.pedestal            = 150;
+P.enableCFA           = false;
+P.noiseEvaluation     = true;
+
+P.executeGlobal();
+Console.writeln("ImageCalibration complete -- " + P.targetFrames.length + " frames calibrated.");

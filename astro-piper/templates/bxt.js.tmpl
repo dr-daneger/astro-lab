@@ -1,0 +1,18 @@
+#include <pjsr/DataType.jsh>
+
+// BlurXTerminator -- Phase 2 deconvolution [sharpen (pass 2)]
+
+var w = ImageWindow.open("E:/AstroPipeline/NGC1499/working/NGC1499_SHO_linear.xisf")[0];
+var view = w.currentView;
+
+var BXT = new BlurXTerminator;
+BXT.correct_only        = false;
+BXT.automatic_psf       = true;
+BXT.sharpen_stars       = 0.250;
+BXT.sharpen_nonstellar  = 0.400;
+BXT.adjust_halos        = 0.050;
+BXT.executeOn(view);
+
+w.saveAs("E:/AstroPipeline/NGC1499/working/NGC1499_SHO_bxt.xisf", false, false, false, false);
+w.forceClose();
+Console.writeln("BlurXTerminator [sharpen (pass 2)] complete.");

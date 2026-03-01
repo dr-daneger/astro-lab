@@ -1,0 +1,25 @@
+#include <pjsr/DataType.jsh>
+
+// SpectrophotometricColorCalibration -- Phase 5 star color calibration
+
+var w = ImageWindow.open("E:/AstroPipeline/NGC1499/working/NGC1499_RGB_composite.xisf")[0];
+var view = w.currentView;
+
+// SPCC requires a valid WCS solution (plate solve with ImageSolver first).
+// The catalog data download is handled automatically by PI if internet is available.
+var SPCC = new SpectrophotometricColorCalibration;
+
+SPCC.applyCalibration     = true;
+SPCC.narrowbandMode       = false;    // false = broadband RGB
+SPCC.whiteReferenceId     = "";       // empty = use catalog photometry
+SPCC.generateGraphs       = false;
+SPCC.generateStarMaps     = false;
+
+// The catalog and solver settings are read from PI's global preferences.
+// Ensure the Gaia DR3 catalog is configured under Resources -> Catalog.
+
+SPCC.executeOn(view);
+
+w.saveAs("E:/AstroPipeline/NGC1499/working/NGC1499_RGB_spcc.xisf", false, false, false, false);
+w.forceClose();
+Console.writeln("SPCC complete.");

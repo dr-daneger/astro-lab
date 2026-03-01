@@ -1,0 +1,29 @@
+#include <pjsr/DataType.jsh>
+
+// StarAlignment -- Phase 1 registration
+
+var P = new StarAlignment;
+
+P.referenceImage        = "E:/AstroPipeline/NGC1499/working/NGC1499_Ha_master.xisf";
+P.referenceIsFile       = true;
+P.undistortedReference  = false;
+
+P.targets = [
+      [true, "E:/AstroPipeline/NGC1499/working/raw/NGC1499_OIII_001_c.xisf"]
+   ];
+
+P.distortionCorrection  = true;
+P.generateDrizzleData   = true;
+P.noGUIMessages         = true;
+
+P.maxStars              = 0;         // 0 = automatic
+P.sensitivityFactor     = 0.50;
+P.peakResponseFactor    = 0.80;
+P.maxDistortionFactor   = 0.50;
+
+P.outputDirectory       = "E:/AstroPipeline/NGC1499/working/registered";
+P.outputExtension       = ".xisf";
+P.outputPostfix         = "_r";
+
+P.executeGlobal();
+Console.writeln("StarAlignment complete.");

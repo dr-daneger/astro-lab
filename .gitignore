@@ -56,3 +56,6 @@ calibration_images/
 *.tmp
 *.bak
 Thumbs.db
+
+# Large XISF image data — keep out of git
+*.xisf

@@ -1,0 +1,22 @@
+#include <pjsr/DataType.jsh>
+
+// GeneralizedHyperbolicStretch -- Phase 3/5 stretch
+
+var w = ImageWindow.open("E:/AstroPipeline/NGC1499/working/NGC1499_Ha_starless.xisf")[0];
+var view = w.currentView;
+
+var GHS = new GeneralizedHyperbolicStretch;
+GHS.stretchType = GeneralizedHyperbolicStretch.prototype.ST_GeneralisedHyperbolic;
+GHS.D           = 5.0000;   // Stretch factor
+GHS.b           = 2.0000;   // Shape parameter
+GHS.SP          = 0.000100;  // Symmetry point (set to histogram peak)
+GHS.LP          = 0.000000;           // Lower protection boundary
+GHS.HP          = 1.000000;           // Upper protection boundary
+GHS.BP          = 0.000000;           // Black point
+GHS.WP          = 1.000000;           // White point
+GHS.invertTransformation = false;
+GHS.executeOn(view);
+
+w.saveAs("E:/AstroPipeline/NGC1499/working/NGC1499_Ha_starless_stretched.xisf", false, false, false, false);
+w.forceClose();
+Console.writeln("GHS stretch complete. D=5.0, b=2.0, SP=0.0001");

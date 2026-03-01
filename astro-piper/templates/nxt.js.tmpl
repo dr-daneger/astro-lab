@@ -1,0 +1,15 @@
+#include <pjsr/DataType.jsh>
+
+// NoiseXTerminator -- Phase 2/4 noise reduction
+
+var w = ImageWindow.open("E:/AstroPipeline/NGC1499/working/NGC1499_SHO_bxt.xisf")[0];
+var view = w.currentView;
+
+var NXT = new NoiseXTerminator;
+NXT.denoise  = 0.800;
+NXT.detail   = 0.150;
+NXT.executeOn(view);
+
+w.saveAs("E:/AstroPipeline/NGC1499/working/NGC1499_SHO_nxt.xisf", false, false, false, false);
+w.forceClose();
+Console.writeln("NoiseXTerminator complete. denoise=0.8, detail=0.15");
