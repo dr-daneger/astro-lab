@@ -2,8 +2,8 @@
 
 > **Project**: Hybrid Python/PixInsight automation pipeline for narrowband astrophotography
 > **Target**: NGC 1499 (California Nebula) — Emission nebula, SHO palette
-> **Version**: 0.3.0-draft
-> **Last Updated**: 2026-03-01
+> **Version**: 0.4.0
+> **Last Updated**: 2026-03-08
 
 ---
 
@@ -25,7 +25,7 @@
 14. [Claude Code Kickoff Prompt](#14-claude-code-kickoff-prompt)
 15. [Implementation Status and Quality Improvement Roadmap](#15-implementation-status-and-quality-improvement-roadmap)
 16. [Code Audit — Rev 0.3.0](#16-code-audit--rev-030-2026-03-01)
-17. [PixInsight Script Plugin System (CascadiaPhotoelectric GUI)](#17-pixinsight-script-plugin-system-astrolab-gui)
+17. [PixInsight Script Plugin System (CascadiaPhotoelectric GUI)](#17-pixinsight-script-plugin-system-cascadiaphotoelectric-gui)
 18. [WBPP Data Flow Decomposition and CascadiaPhotoelectric Breakpoint Architecture](#18-wbpp-data-flow-decomposition-and-cascadiaphotoelectric-breakpoint-architecture)
 
 ---
