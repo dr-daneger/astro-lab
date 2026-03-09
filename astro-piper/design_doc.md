@@ -24,6 +24,9 @@
 13. [Project Deliverables and Phasing](#13-project-deliverables-and-phasing)
 14. [Claude Code Kickoff Prompt](#14-claude-code-kickoff-prompt)
 15. [Implementation Status and Quality Improvement Roadmap](#15-implementation-status-and-quality-improvement-roadmap)
+16. [Code Audit — Rev 0.3.0](#16-code-audit--rev-030-2026-03-01)
+17. [PixInsight Script Plugin System (CascadiaPhotoelectric GUI)](#17-pixinsight-script-plugin-system-astrolab-gui)
+18. [WBPP Data Flow Decomposition and CascadiaPhotoelectric Breakpoint Architecture](#18-wbpp-data-flow-decomposition-and-cascadiaphotoelectric-breakpoint-architecture)
 
 ---
 
@@ -1297,5 +1300,457 @@ Audit performed after first-light run on NGC 1499. Items removed immediately are
 | L1 | `scripts/spike_test.py` | throughout | One-off spike test from Sprint 0; exception handling duplicated in every test function; parameter names may have drifted from final API (e.g. `SXT.stars_image` vs `SXT.stars`) | Review before using as reference; consider removing or converting to proper test |
 | L2 | `pjsr_generator.py` | 14 | Phase 2 module-level header still lists "NoiseXTerminator" — NXT generates scripts but GraXpert runs denoising | Update header comment |
 | L3 | `tests/test_pjsr_generator.py` | 801–835 | `TestWriteReferenceTemplates` calls `write_reference_templates()` which uses `nxt_denoise_linear`/`nxt_detail_linear` config keys not in `pipeline_config.json`; function uses hardcoded fallback defaults | Add the keys to config or document that the template writer uses its own representative defaults |
+
+---
+
+## 17. PixInsight Script Plugin System (CascadiaPhotoelectric GUI)
+
+### 17.1 Motivation
+
+The automated pipeline (`orchestrator.py` + `pjsr_generator.py`) runs end-to-end but offers limited interactive control at individual stages. When calibration or processing results look wrong, the operator needs to:
+
+1. **Enter at any arbitrary stage** with intermediate files already loaded
+2. **See and adjust all tunable parameters** for that stage via native PI GUI controls
+3. **Run the exact same PI process configuration** as the automated pipeline (not a manual approximation)
+4. **Compare A/B variants** — e.g., darks on vs off, different pedestal values, different stretch factors
+
+A PixInsight script plugin system under **Script > CascadiaPhotoelectric** provides all of this while guaranteeing process parity with the pipeline.
+
+### 17.2 Architecture
+
+```
+pixinsight-scripts/
+  CascadiaPhotoelectric/
+    CascadiaPhotoelectric-CalibrationDiagnostic.js    Phase 1: dark/flat/bias A/B testing
+    CascadiaPhotoelectric-LinearProcessing.js         Phase 2: crop, BXT, denoise, SXT (planned)
+    CascadiaPhotoelectric-StretchPalette.js           Phase 3: GHS stretch, Foraxx (planned)
+    CascadiaPhotoelectric-NonlinearEnhance.js         Phase 4: SCNR, curves, HDR, LHE (planned)
+    CascadiaPhotoelectric-StarRecombination.js        Phase 5: SPCC, screen blend (planned)
+```
+
+**Installation:** Copy the `CascadiaPhotoelectric/` folder to `[PixInsight]/src/scripts/`. Then Script > Feature Scripts > Add > select `CascadiaPhotoelectric/`. Scripts appear under Script > CascadiaPhotoelectric.
+
+**Key design constraints for PI script development:**
+
+| Constraint | Detail |
+|---|---|
+| **PI 1.8.x compatibility** | `ImageWindow.windowById()` does not exist. Iterate `ImageWindow.windows` to find by view ID. |
+| **Enum constants** | `ImageIntegration.prototype.*` may be undefined. Use numeric constants (see `pjsr_generator.py` `_II_*` maps). |
+| **Path format** | All paths must use forward slashes, even on Windows. PI's JS engine silently fails on backslashes. |
+| **Settings persistence** | Use `Settings.read()` / `Settings.write()` with `TITLE + "/key"` pattern. Values persist across PI restarts. |
+| **Dialog framework** | Use `Dialog` base class with `Sizer` layout. `GroupBox`, `CheckBox`, `SpinBox`, `Edit`, `ToolButton`, `PushButton` are the core widgets. |
+| **Feature registration** | `#feature-id` and `#feature-info` directives at file top control menu placement and tooltip. Format: `#feature-id ParentMenu > Script Name`. |
+| **Auto-STF** | Use the shared `applyAutoSTF()` function (from `pjsr_generator._AUTO_STF_JS`) for consistent breakpoint review appearance. Parameters: shadowsClip=-2.8, targetBg=0.25. |
+| **No headless conflicts** | `executeGlobal()` in scripts runs within the GUI event loop, not headless mode. Masks and previews work normally. |
+
+### 17.3 Script-to-Pipeline Parameter Parity
+
+Each CascadiaPhotoelectric script must use **identical process property assignments** as the corresponding `pjsr_generator` function. This is the core guarantee — the GUI script and the automated pipeline produce the same result given the same inputs and parameters.
+
+**Parity mapping (implemented and planned):**
+
+| CascadiaPhotoelectric Script | Pipeline Generator Function(s) | PI Process(es) | Tunable Parameters |
+|---|---|---|---|
+| **CalibrationDiagnostic** | `generate_image_calibration()` | ImageCalibration | dark on/off, flat on/off, bias on/off, pedestal, max test frames, A/B diagnostic mode |
+| LinearProcessing | `generate_crop()`, `generate_blur_xterminator()`, `generate_star_xterminator()`, `generate_channel_extraction()` | Crop, BlurXTerminator, StarXTerminator, ChannelExtraction | crop_pixels, BXT correct_only/sharpen_stars/sharpen_nonstellar/adjust_halos, SXT unscreen |
+| StretchPalette | `generate_ghs_stretch()`, `generate_linear_fit()`, `generate_foraxx_palette()` | GHS, LinearFit, PixelMath | D (stretch factor per channel), b (shape), SP (symmetry point per channel), linear_fit reject_high, reference channel |
+| NonlinearEnhance | `generate_scnr()`, `generate_curves_hue_shift()`, `generate_curves_saturation_contrast()`, `generate_hdr_multiscale()`, `generate_local_histogram_equalization()` | SCNR, CurvesTransformation, HDRMultiscaleTransform, LHE | scnr_amount, curve control points, hdrmt_layers/iterations, lhe_radius/contrast/amount |
+| StarRecombination | `generate_channel_combination()`, `generate_spcc()`, `generate_ghs_stretch()`, `generate_screen_blend()` | PixelMath, SPCC, GHS, PixelMath | star_brightness_factor, ghs_rgb_stretch_factor, spcc catalog |
+
+### 17.4 Calibration Diagnostic Script — Detailed Design
+
+**File:** `CascadiaPhotoelectric-CalibrationDiagnostic.js` (Phase 1, implemented)
+
+**Problem it solves:** "My calibrated images look like shit and I think it's my flats / I have dark speckle." The operator needs to isolate whether the issue is darks, flats, or both.
+
+**A/B Diagnostic Mode:** When enabled, runs ImageCalibration on the same subset of light frames four times with different master combinations:
+
+| Run | Dark | Flat | Output Subdir | What to Look For |
+|---|---|---|---|---|
+| 1 | ON | ON | `dark_flat/` | Full calibration (baseline) |
+| 2 | ON | OFF | `dark_only/` | If vignetting visible → flat was helping. If cleaner → flat was hurting. |
+| 3 | OFF | ON | `flat_only/` | If dark speckle gone → dark was the problem. If still present → it's in the raw data. |
+| 4 | OFF | OFF | `raw/` | Uncalibrated baseline — what's inherent vs what calibration introduces |
+
+**Interpretation guide (printed to PI Console after run):**
+
+- Dark speckle in run 1 but NOT run 3 → **darks are mismatched** (wrong temp, gain, or exposure)
+- Images look worse with flats (run 1 vs run 2) → **flats are overcorrecting** (dust moved, wrong gain, wrong rotation)
+- Speckle in all 4 runs → **hot pixels in raw data** (need cosmetic correction or more dithering)
+- Vignetting in run 2 but not run 1 → **flats are working correctly** (keep them)
+
+**Dialog controls:**
+
+| Control | Type | Default | Maps to Pipeline Config |
+|---|---|---|---|
+| Light Frames Directory | Dir picker | — | `directories.raw_nb` or `raw_rgb` |
+| Test frames | SpinBox 0-999 | 3 | (subset for speed; 0=all) |
+| Dark master + enable | File + CheckBox | ON | `calibration_nb/master_dark*.xisf` |
+| Flat master + enable | File + CheckBox | ON | `calibration_nb/master_flat_{Ch}*.xisf` |
+| Bias master + enable | File + CheckBox | OFF | (usually disabled for CMOS) |
+| Pedestal | SpinBox 0-1000 | 150 | `preprocessing.pedestal` |
+| A/B Diagnostic | CheckBox | OFF | (runs all 4 combos) |
+| Auto-STF | CheckBox | ON | (applies breakpoint-standard STF) |
+| Output Directory | Dir picker | lightDir/diagnostic | (auto-created) |
+
+**Settings persistence:** All parameters stored via `Settings.read/write` with `"CascadiaPhotoelectric Calibration Diagnostic/"` prefix. Values survive PI restarts.
+
+### 17.5 Implementation Guide for Future Phase Scripts
+
+When implementing additional CascadiaPhotoelectric scripts (Phases 2-5), follow this pattern:
+
+1. **Read the corresponding `pjsr_generator` function(s)** — copy the exact process property assignments. Do not approximate or simplify.
+
+2. **Map every tunable parameter to a dialog control:**
+   - Float parameters → `NumericControl` (slider + spinbox)
+   - Integer parameters → `SpinBox`
+   - Boolean parameters → `CheckBox`
+   - File paths → `Edit` + `ToolButton` (file picker)
+   - Enum choices (e.g., rejection algorithm) → `ComboBox`
+
+3. **Use `Settings.read/write`** for persistence with `TITLE + "/paramName"` keys.
+
+4. **Include `applyAutoSTF()`** for all scripts that produce linear output. Copy the function verbatim from the Calibration Diagnostic script (which matches `pjsr_generator._AUTO_STF_JS`).
+
+5. **Use `#feature-id CascadiaPhotoelectric > Script Name`** for consistent menu placement.
+
+6. **Window management pattern:**
+   - Open files with `ImageWindow.open(path)[0]`
+   - Find windows by ID using the `ImageWindow.windows` iteration pattern (not `windowById`)
+   - Save with `win.saveAs(path, false, false, false, false)` (5 false args suppress dialogs)
+   - Close with `win.forceClose()`
+   - Tile all open windows with `ImageWindow.tile()`
+
+7. **Test the script against pipeline output:** Run the same input through both the CascadiaPhotoelectric script and `orchestrator.py --start-stage "X" --force`. Compare output file hashes. They must match for identical parameters.
+
+### 17.6 Execution Plan — Phased Rollout
+
+| Sprint | Script | Trigger / Need |
+|---|---|---|
+| **Now** | CalibrationDiagnostic | Operator has bad calibration — needs A/B diagnostic immediately |
+| **Next** | LinearProcessing | Operator wants to tune BXT sharpen/correct parameters interactively |
+| **Next+1** | StretchPalette | Most parameter-sensitive phase — per-channel D/b/SP tuning with live preview |
+| **Next+2** | NonlinearEnhance | Color grading iteration (curves, SCNR amount, HDR layers) |
+| **Next+3** | StarRecombination | Star brightness tuning, halo reduction, final blend review |
+
+Each script is independent and can be used standalone — they don't require the full pipeline to have run. The operator just needs the intermediate files for that phase (produced either by the pipeline or by earlier CascadiaPhotoelectric scripts).
+
+---
+
+## 18. WBPP Data Flow Decomposition and CascadiaPhotoelectric Breakpoint Architecture
+
+### 18.1 Why This Section Exists
+
+PixInsight's WeightedBatchPreProcessing (WBPP) script is a black box. It chains ~8 distinct mathematical operations, each with tunable parameters, into a single "run" button. When the output looks wrong, you can't tell which step caused the problem. This section decomposes WBPP into its atomic operations, documents the mathematical transformation at each step, specifies what data type each operates on (individual subs vs. integrated masters), and defines the CascadiaPhotoelectric breakpoint architecture for interactive diagnostics at every stage.
+
+### 18.2 WBPP Atomic Operations — Complete Data Flow
+
+The complete preprocessing pipeline from raw camera frames to a stacked, drizzle-enhanced master light consists of these discrete mathematical operations, each operating on specific data types:
+
+```
+PHASE 0: MASTER CALIBRATION FRAME CREATION
+===========================================
+
+  Step 0a: Master Bias (if CCD — skip for CMOS)
+  -----------------------------------------------
+  Input:   Raw bias subs (N frames, zero-length exposure)
+  Operation: ImageIntegration — pixel-wise statistical combination
+    Math:    For each pixel (x,y): master_bias(x,y) = reject_then_combine(bias_1..N(x,y))
+    Rejection: Removes outlier pixels (cosmic rays, hot pixels) per-pixel across the stack
+    Algorithms: WinsorizedSigmaClip (typical), ESD, LinearFitClip, PercentileClip
+    Normalization: NoNormalization (bias frames should be identical)
+    Params: sigma_low (4.0), sigma_high (3.0)
+  Output:  master_bias.xisf (single frame, reduced read noise pattern)
+  Data type: INTEGRATED MASTER (1 frame from N subs)
+
+  Step 0b: Master Dark
+  ---------------------
+  Input:   Raw dark subs (N frames, matched exposure/gain/temp to lights)
+  Pre-step: Subtract master_bias if available (CMOS: skip, bias is negligible)
+  Operation: ImageIntegration
+    Math:    For each pixel (x,y): master_dark(x,y) = reject_then_combine(dark_1..N(x,y))
+    Rejection: Same algorithms as bias
+    Normalization: NoNormalization (darks must preserve absolute dark current values)
+    Params: sigma_low (4.0), sigma_high (3.0)
+  Output:  master_dark.xisf
+  Data type: INTEGRATED MASTER
+  CRITICAL: Must match lights in gain, temperature, and exposure time.
+            Mismatched darks introduce more noise than they remove.
+
+  Step 0c: Master Flat (per filter)
+  ----------------------------------
+  Input:   Raw flat subs for ONE filter (N frames, uniform illumination)
+  Pre-step: Subtract master_dark from each flat sub (ImageCalibration)
+    Math:    calibrated_flat_i(x,y) = raw_flat_i(x,y) - master_dark(x,y) * scale_factor
+    Purpose: Remove dark current and hot pixels from flat subs
+    Note:    Dark scaling uses optimization to match the flat's exposure/temp
+  Operation: ImageIntegration on dark-subtracted flat subs
+    Math:    For each pixel (x,y): master_flat(x,y) = reject_then_combine(cal_flat_1..N(x,y))
+    Rejection: WinsorizedSigmaClip or LinearFitClip (flats have multiplicative structure)
+    Normalization: Multiplicative (preserves the illumination pattern shape)
+    Params: sigma_low (4.0), sigma_high (3.0)
+  Post-step: PI internally normalizes to mean=1.0 during application
+  Output:  master_flat_FilterName.xisf
+  Data type: INTEGRATED MASTER (one per filter)
+  CRITICAL: Must match lights in optical train configuration (filter, rotation,
+            camera orientation, focus position). Dust donuts move with rotation.
+            Wrong gain on flats is the #1 cause of bad flat correction.
+
+
+PHASE 1: LIGHT FRAME PREPROCESSING
+====================================
+
+  Step 1a: Image Calibration (per light sub)
+  -------------------------------------------
+  Input:   Individual raw light subs + master dark + master flat
+  Operation: ImageCalibration (applied to EACH sub independently)
+    Math:    calibrated(x,y) = (raw(x,y) - master_dark(x,y) * k) / master_flat_norm(x,y) + pedestal
+             where k = dark optimization scale factor (auto-computed by PI)
+             and master_flat_norm = master_flat / mean(master_flat)
+    Pedestal: Added to prevent negative values after dark subtraction (default 150 DN)
+    Dark optimization: PI fits a scale factor k to minimize residual noise
+  Output:  *_c.xisf per sub (calibrated individual frames)
+  Data type: INDIVIDUAL CALIBRATED SUBS (N frames, not yet stacked)
+
+  Step 1b: Subframe Selection / Weighting
+  -----------------------------------------
+  Input:   Calibrated light subs
+  Operation: SubframeSelector — quality metrics computation (no frame removal)
+    Metrics: FWHM (focus quality), Eccentricity (tracking/guiding), SNRWeight
+    Math:    weight(frame) = (1 + SNR) / (1 + FWHM) / (1 + Eccentricity)
+  Output:  CSV with per-frame quality scores
+  Data type: METADATA (no pixel changes)
+  Note:    Operator reviews CSV and manually rejects bad frames before integration
+
+  Step 1c: Star Alignment / Registration (per calibrated sub)
+  ------------------------------------------------------------
+  Input:   Calibrated light subs + one reference frame (best quality sub)
+  Operation: StarAlignment (applied to EACH sub independently)
+    Math:    registered(x,y) = interpolate(calibrated, transform(x,y))
+             where transform maps detected star positions to reference frame
+    Distortion: Optional local distortion model (thin plate splines)
+    Interpolation: Bicubic B-spline (default) — resamples pixel grid
+    Drizzle data: Generates .xdrz sidecar files recording the subpixel transform
+  Output:  *_r.xisf per sub + *.xdrz sidecars
+  Data type: INDIVIDUAL REGISTERED SUBS (N frames, aligned but not stacked)
+  CRITICAL: Registration uses interpolation which redistributes noise.
+            This is why you can't register THEN calibrate — the noise structure
+            that darks/flats correct is specific to the raw pixel grid.
+
+  Step 1d: Local Normalization (optional, per registered sub)
+  ------------------------------------------------------------
+  Input:   Registered subs + reference frame
+  Operation: LocalNormalization (applied to EACH sub independently)
+    Math:    normalized(x,y) = a(x,y) * registered(x,y) + b(x,y)
+             where a(x,y) and b(x,y) are locally-fitted scale and offset maps
+    Purpose: Compensate for sky background gradients that vary between subs
+             (moon glow, light pollution gradients, transparency changes)
+    Scale:   128 pixels (size of local fitting regions)
+  Output:  *_n.xisf per sub + .xnml sidecar files
+  Data type: INDIVIDUAL NORMALIZED SUBS
+
+  Step 1e: Image Integration / Stacking
+  ---------------------------------------
+  Input:   Registered (and optionally normalized) subs + quality weights
+  Operation: ImageIntegration — THE core stacking operation
+    Math:    For each pixel (x,y): master_light(x,y) = weighted_combine(sub_1..N(x,y))
+             after pixel rejection removes outliers (satellites, cosmic rays, planes)
+    Rejection algorithms and when to use each:
+      - ESD (default for NB): Generalized Extreme Studentized Deviate test
+        Best for: Small datasets (< 30 frames), narrowband with faint extended signal
+        Params: significance=0.05, outliers_fraction=0.30, low_relaxation=2.0
+        low_relaxation > 1 protects faint nebula signal from being clipped
+      - WinsorizedSigmaClip (default for RGB): Replaces outliers with boundary values
+        Best for: Large datasets (> 30 frames), broadband imaging
+        Params: sigma_low=4.0, sigma_high=3.0
+      - LinearFitClip: Fits linear model to pixel value vs. frame, rejects outliers
+        Best for: Datasets with sky background variations
+        Params: sigma_low=5.0, sigma_high=2.5
+      - PercentileClip: Simple percentile-based clipping
+        Best for: Very large datasets (> 50 frames)
+    Normalization: AdditiveWithScaling (matches background AND noise scaling)
+    Weight mode: NoiseEvaluation (PI measures noise per-frame, weights inversely)
+  Output:  master_light.xisf (single stacked frame)
+  Data type: INTEGRATED MASTER LIGHT (1 frame from N subs — this is the money shot)
+
+  Step 1f: Drizzle Integration (optional, applied to integrated master)
+  ----------------------------------------------------------------------
+  Input:   Registered subs + .xdrz sidecar files from Step 1c
+  Operation: DrizzleIntegration — subpixel reconstruction using dither offsets
+    Math:    For each output pixel at 2x resolution:
+             drizzle(x,y) = weighted sum of input sub-pixels that overlap this output pixel
+             Drop function: Square/Circular/Gaussian kernel, shrunk by drop_shrink factor
+    Scale:   2.0 (doubles resolution — requires well-dithered data)
+    Drop shrink: 0.9 (how much each input pixel is shrunk before mapping)
+    Kernel:  Square (default), Circular, or Gaussian
+  Output:  master_light_drizzle.xisf (2x resolution master)
+  Data type: INTEGRATED DRIZZLE MASTER
+  Note:    Only useful if acquisition used dithering. Without dithering,
+           drizzle just produces a blurry 2x upscale.
+```
+
+### 18.3 Key Insight: Why Calibration Order Matters
+
+The order of operations is not arbitrary — it's dictated by the mathematical structure of the noise:
+
+1. **Calibrate BEFORE register**: Dark current and flat-field response are fixed to the physical pixel grid. Registration resamples pixels, mixing the noise of adjacent pixels. If you register first, the dark/flat correction no longer matches the noise pattern.
+
+2. **Dark subtract BEFORE flat divide**: `calibrated = (raw - dark) / flat`. The dark represents additive thermal noise at each physical pixel. The flat represents multiplicative optical vignetting/dust. You must remove the additive component first, then correct the multiplicative component.
+
+3. **Integrate AFTER all per-sub corrections**: Stacking averages out random noise but preserves systematic patterns. If calibration artifacts exist in individual subs, they stack right in and become permanent.
+
+4. **Drizzle requires registration metadata**: The .xdrz sidecar files record the exact subpixel offset of each sub relative to the reference. Drizzle uses these offsets to reconstruct resolution beyond the native pixel scale.
+
+### 18.4 CascadiaPhotoelectric Script Architecture — Expanded
+
+The original Section 17 planned 5 scripts (Phases 1-5). This was insufficient — it assumed masters already exist and are correct. The expanded architecture adds Phase 0 and decomposes Phase 1 into its sub-steps:
+
+```
+pixinsight-scripts/
+  CascadiaPhotoelectric/
+    CascadiaPhotoelectric-MasterBuilder.js          Phase 0: Build masters from raw subs
+    CascadiaPhotoelectric-CalibrationDiagnostic.js   Phase 1a: Apply masters to lights (A/B)
+    CascadiaPhotoelectric-RegistrationInspector.js   Phase 1c: Registration quality check (planned)
+    CascadiaPhotoelectric-IntegrationTuner.js        Phase 1e: Rejection algorithm A/B (planned)
+    CascadiaPhotoelectric-DrizzleCompare.js          Phase 1f: Drizzle vs no-drizzle (planned)
+    CascadiaPhotoelectric-LinearProcessing.js        Phase 2: BXT, SXT, crop (planned)
+    CascadiaPhotoelectric-StretchPalette.js          Phase 3: GHS, Foraxx (planned)
+    CascadiaPhotoelectric-NonlinearEnhance.js        Phase 4: SCNR, curves, HDR (planned)
+    CascadiaPhotoelectric-StarRecombination.js       Phase 5: SPCC, screen blend (planned)
+    CascadiaPhotoelectric-ScoreLastRun.js            Scoring: Deferred rating dialog
+```
+
+### 18.5 Master Builder Script — Detailed Design
+
+**File:** `CascadiaPhotoelectric-MasterBuilder.js` (Phase 0, implemented)
+
+**Problem it solves:** "My master flats are bad but I can't see how they were created or try different rejection algorithms."
+
+**Workflow:**
+
+1. Operator selects frame type (Dark / Flat / Bias)
+2. Operator points to raw subs directory
+3. For flats: optionally selects master dark for pre-calibration of flat subs
+4. Operator chooses rejection algorithm and sigma values
+5. Script runs ImageIntegration and displays the resulting master
+6. In A/B mode: runs 3 rejection algorithms, tiles results for comparison
+7. Metrics logged: median, MAD, uniformity (MAD/median ratio), hot pixel fraction
+
+**A/B Mode — Rejection Algorithm Comparison:**
+
+| Run | Algorithm | Best For | Key Params |
+|---|---|---|---|
+| 1 | ESD | Small NB datasets, faint signal protection | significance=0.05, outliers=0.30, low_relaxation=2.0 |
+| 2 | WinsorizedSigmaClip | Large datasets, general purpose | sigma_low=4.0, sigma_high=3.0 |
+| 3 | LinearFitClip | Variable sky background conditions | sigma_low=5.0, sigma_high=2.5 |
+
+**What to look for in the master flat:**
+- Uniform illumination gradient (center bright, edges dim) — normal
+- Dust donuts (dark rings) — normal, this is what the flat corrects
+- Hot pixels or cosmic rays — rejection algorithm failure, try different algorithm
+- Banding or pattern noise — too few subs, need more data
+- Non-uniform noise — some subs had different exposure, check normalization
+
+**What to look for in the master dark:**
+- Uniform dark current with scattered hot pixels — normal
+- Bright spots or clusters — these are hot pixel colonies, normal at -20C
+- Gradient — temperature was drifting during dark acquisition
+- High median relative to expected dark current — wrong exposure or gain
+
+### 18.6 Phase 1 Sub-Step Scripts — Planned Architecture
+
+**Integration Tuner (Step 1e):**
+
+Operates on registered light subs. Allows the operator to:
+- Compare rejection algorithms on the SAME set of registered subs
+- Adjust sigma clipping thresholds
+- See the rejection map (which pixels were rejected in which frames)
+- Compare weighted vs. unweighted integration
+- Adjust normalization mode
+- A/B: run with ESD vs WinsorizedSigma vs LinearFit, tile results
+
+**Registration Inspector (Step 1c):**
+
+Operates on calibrated light subs. Allows the operator to:
+- Select reference frame (best quality sub)
+- Run StarAlignment and inspect the registration residuals
+- Blink between reference and registered subs to check alignment
+- Verify distortion correction is working (corner stars should be tight)
+- Check .xdrz sidecar generation for drizzle compatibility
+
+**Drizzle Compare (Step 1f):**
+
+Operates on registered subs + .xdrz files. Allows the operator to:
+- Compare standard integration vs drizzle integration side by side
+- Adjust drizzle scale (1.5x, 2x, 3x)
+- Adjust drop shrink factor
+- Compare kernel types (Square, Circular, Gaussian)
+- Evaluate whether dither pattern was sufficient for drizzle benefit
+
+### 18.7 Breakpoint and Resume Architecture
+
+Every CascadiaPhotoelectric script saves its settings and results to a structured JSON file. This serves three purposes:
+
+1. **Resume from breakpoint:** The automated pipeline can read the JSON to pick up where the operator left off, using the operator's tuned parameters instead of defaults.
+
+2. **Learning across sessions:** The diagnostic_log.json accumulates entries with full observation context (FITS headers, moon phase, equipment, target type) and operator scoring. Future Claude sessions can analyze trends: "for extended NB at low altitude, ESD with low_relaxation=2.0 consistently scores 4+."
+
+3. **Reproducibility:** Every parameter choice is logged. If an image turns out well, the exact settings can be replicated. If it turns out badly, the settings can be compared against successful runs.
+
+**JSON schema for breakpoint files:**
+
+```json
+{
+  "timestamp": "2026-03-08T21:30:00Z",
+  "version": "1.3.0",
+  "script": "MasterBuilder",
+  "step": "0c",
+  "step_name": "Master Flat Creation",
+  "inputs": {
+    "subs_dir": "path/to/flat_subs/",
+    "num_subs": 40,
+    "filter": "Ha",
+    "master_dark": "path/to/master_dark.xisf"
+  },
+  "parameters": {
+    "rejection_algorithm": "WinsorizedSigmaClip",
+    "sigma_low": 4.0,
+    "sigma_high": 3.0,
+    "normalization": "Multiplicative"
+  },
+  "outputs": {
+    "master_path": "path/to/master_flat_Ha.xisf"
+  },
+  "metrics": {
+    "median": 0.4521,
+    "mad": 0.0051,
+    "uniformity": 0.0113,
+    "rejected_pixel_pct": 2.3
+  },
+  "observation_context": { "..." },
+  "scores": [ "..." ],
+  "notes": "operator notes",
+  "llm_context": {
+    "purpose": "Master flat creation diagnostic...",
+    "next_step": "Use this master in CalibrationDiagnostic to verify light frame calibration quality"
+  }
+}
+```
+
+### 18.8 Data Type Reference
+
+Throughout this pipeline, it is critical to distinguish what type of data each operation accepts and produces:
+
+| Data Type | Description | Example | Count |
+|---|---|---|---|
+| **Raw Sub** | Single exposure direct from camera, uncalibrated | `Light_NGC1499_300s_Ha_0001.fit` | N (many) |
+| **Calibrated Sub** | Raw sub with dark subtracted + flat divided | `Light_..._0001_c.xisf` | N |
+| **Registered Sub** | Calibrated sub aligned to reference frame | `Light_..._0001_r.xisf` | N |
+| **Normalized Sub** | Registered sub with local background equalized | `Light_..._0001_n.xisf` | N |
+| **Integrated Master** | Statistical combination of N subs into 1 frame | `master_dark.xisf`, `NGC1499_Ha_master.xisf` | 1 |
+| **Drizzle Master** | Subpixel-reconstructed integration at higher resolution | `NGC1499_Ha_drizzle.xisf` | 1 |
+| **Drizzle Sidecar** | Subpixel transform metadata from registration | `Light_..._0001_r.xdrz` | N |
+
+**Rule:** Operations that correct pixel-level artifacts (calibration) must happen BEFORE operations that resample the pixel grid (registration). Operations that combine frames (integration) happen last.
 
 ---
