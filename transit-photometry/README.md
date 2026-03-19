@@ -1,19 +1,35 @@
-# Transit Process Pipeline
+# Transit Photometry Pipeline
 
-Dataset-driven AstroImageJ (AIJ) photometry with reproducible analysis. The scripts in this repository never require science data to live inside the repo; you always point them at an external dataset directory with `--dataset PATH`.
+Exoplanet transit observation and analysis workflow: from target selection through data reduction and light curve modeling.
 
-## What This Repository Provides
-- `scripts/generate_skews.py`: writes AIJ job macros for a grid of aperture/annulus radii (RA/Dec aware) and can optionally drive AIJ headlessly.
-- `scripts/batch_reduce.py`: ingests AIJ Multi-Aperture CSVs, detrends, bins, models the transit, and writes summary figures.
-- `scripts/windows_pipeline_helpers.ps1`: optional PowerShell helpers for Windows users (see below).
-- `aij/Probe_Environment.ijm`, `aij/Reflect_MultiAperture_API.ijm`: diagnostic probes that enumerate the commands/classes exported by your AIJ build (no guessing required).
-- `aij/Dir_FITS_Glob.ijm`, `aij/Run_Radec_Photometry_Template.ijm`: reusable macros the job files call to open FITS stacks, load RA/Dec catalogues, and run Multi-Aperture.
-- `example_datasets/`: optional sample/test content (safe to delete once you have external data).
+## Workflow Stages
 
-`aij/jobs/` receives the generated per-skew job files. AIJ can execute macros from any readable path, so keeping them in-repo is fine.
+### 1. **target-selector/** â€” Pre-Observation Planning
+Identify and rank exoplanet transit candidates from the ExoClock catalog. Useful for:
+- Finding which targets are observable during your clear-sky windows
+- Filtering by signal-to-noise potential based on target properties and your equipment
+
+See `target-selector/README.md` and `target-selector/pick_targets.py` for usage.
+
+### 2. **scripts/** â€” Post-Observation Reduction
+Dataset-driven AstroImageJ (AIJ) photometry with reproducible analysis. 
+
+**Key scripts:**
+- `generate_skews.py`: writes AIJ job macros for a grid of aperture/annulus radii (RA/Dec aware) and can optionally drive AIJ headlessly.
+- `batch_reduce.py`: ingests AIJ Multi-Aperture CSVs, detrends, bins, models the transit, and writes summary figures.
+- `windows_pipeline_helpers.ps1`: optional PowerShell helpers for Windows users.
+
+### 3. **aij/** â€” Reusable AIJ Macros
+- `Probe_Environment.ijm`, `Reflect_MultiAperture_API.ijm`: diagnostic probes that enumerate the commands/classes exported by your AIJ build.
+- `Dir_FITS_Glob.ijm`, `Run_Radec_Photometry_Template.ijm`: reusable macros for opening FITS stacks, loading RA/Dec catalogues, and running Multi-Aperture.
+
+`aij/jobs/` receives the generated per-skew job files.
 
 ## External Dataset Requirements
-Create (or reuse) a dataset directory anywhere on your system. The scripts expect the following inside that directory:
+
+The scripts never require science data inside the repo â€” you point them at an external dataset directory with `--dataset PATH`.
+
+Expected dataset structure:
 ```
 <dataset>/
 +- raw/ (or reduced/ or another folder you name)   # FITS files to analyse; select with --fits-root
@@ -22,10 +38,10 @@ Create (or reuse) a dataset directory anywhere on your system. The scripts expec
 +- apertures.csv or apertures.radec                # RA/Dec catalogue for target + comparison stars
 +- ephemeris.yaml (optional)                       # Ingress/mid/egress override (UTC)
 ```
+
 Only the apertures catalogue is required up front. `csv/` and `outputs/` are created automatically. The current pipeline searches for `*.fits` files in the FITS root because ASIAir outputs that extension.
 
 ### Supported Aperture Catalogues
-You may supply either format:
 
 **CSV (decimal degrees):**
 ```
@@ -78,16 +94,16 @@ python scripts/generate_skews.py ^
 Outputs land in `<dataset>/csv/` and `<dataset>/outputs/`, keeping science products outside the repo.
 
 ## Before You Run the Jobs: interrogate your AIJ build
-AIJ's macro APIs vary between releases. Use the supplied probes once per workstation—no internet required:
+AIJ's macro APIs vary between releases. Use the supplied probes once per workstationï¿½no internet required:
 
 1. **Enumerate commands and helper functions**
-   Open `Plugins > Macros > Run…` and choose `aij/Probe_Environment.ijm`. The log reports whether helpers such as `endsWith`/`Array.sort` exist and reveals the Java class bound to “Multi-Aperture”.
+   Open `Plugins > Macros > Runï¿½` and choose `aij/Probe_Environment.ijm`. The log reports whether helpers such as `endsWith`/`Array.sort` exist and reveals the Java class bound to ï¿½Multi-Apertureï¿½.
 
 2. **Inspect Multi-Aperture methods**
-   Open `Plugins > Macros > Run…` again and choose `aij/Reflect_MultiAperture_API.ijm`. Pass the class name from step 1 (or accept the default). The macro lists exported setter methods so you know the exact `call("…")` signatures available on your build.
+   Open `Plugins > Macros > Runï¿½` again and choose `aij/Reflect_MultiAperture_API.ijm`. Pass the class name from step 1 (or accept the default). The macro lists exported setter methods so you know the exact `call("ï¿½")` signatures available on your build.
 
 3. **Record the UI workflow once**
-   With the Macro Recorder active (`Plugins > Macros > Record…`), manually open the FITS stack, load the RA/Dec list, set radii, run Multi-Aperture, and save the “Aperture Photometry” table. Copy the recorded `run("…", "…")` lines and paste them into the placeholders inside `aij/Run_Radec_Photometry_Template.ijm` (look for the `NOTE: insert your recorded …` comments). This gives the template rock-solid commands tailored to your installation.
+   With the Macro Recorder active (`Plugins > Macros > Recordï¿½`), manually open the FITS stack, load the RA/Dec list, set radii, run Multi-Aperture, and save the ï¿½Aperture Photometryï¿½ table. Copy the recorded `run("ï¿½", "ï¿½")` lines and paste them into the placeholders inside `aij/Run_Radec_Photometry_Template.ijm` (look for the `NOTE: insert your recorded ï¿½` comments). This gives the template rock-solid commands tailored to your installation.
 
 Once the template is patched, `generate_skews.py` can safely reuse it for every dataset/skew.
 
@@ -134,7 +150,7 @@ PS> Invoke-TransitMacro -JobName "job_debayered_green_Ap2-5_In9-0_Out19-0"
 - **Analysis dry run:** drop an existing `MA_*.csv` into `<dataset>/csv/` and run `batch_reduce.py` to confirm the analysis stage without reprocessing FITS.
 
 ## Frequently Asked Questions
-- **Do macros have to live in AIJ's macros directory?** No. Pass the macro path on the command line or via `Plugins > Macros > Run…` and AIJ will execute it in place.
+- **Do macros have to live in AIJ's macros directory?** No. Pass the macro path on the command line or via `Plugins > Macros > Runï¿½` and AIJ will execute it in place.
 - **Can I keep multiple datasets on different drives?** Yes. Point `--dataset` at the dataset you want to process. The repo never copies FITS internally unless you choose to.
 - **What happens if `csv/` or `outputs/` are missing?** Both scripts create them automatically inside the dataset.
 - **Is sample data provided?** `example_datasets/` contains illustrative content (including a `.radec` list and a few FITS frames). Use it for tests or remove it once you have real data elsewhere.
