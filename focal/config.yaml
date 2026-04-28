@@ -1,0 +1,113 @@
+project:
+  name: FOCAL
+  run_label: asiair_parity_v1
+
+indi:
+  host: 127.0.0.1
+  port: 7624
+  connect_timeout_s: 20
+  property_timeout_s: 15
+
+paths:
+  buffer_root: /mnt/ssd_buffer/focal
+  log_file: ./logs/focal.log
+
+equipment:
+  camera: ZWO CCD ASI2600MM Pro
+  mount: ZWO AM5N
+  focuser: ZWO EAF
+  filter_wheel: ZWO EFW
+
+camera:
+  binning:
+    x: 1
+    y: 1
+  pixel_size_um:
+    x: 3.76
+    y: 3.76
+  offsets_by_gain:
+    0: 8
+    100: 20
+    200: 35
+  egain_by_gain:
+    0: 0.0
+    100: 0.78
+    200: 0.39
+  properties:
+    blob: CCD1
+    exposure:
+      name: CCD_EXPOSURE
+      element: CCD_EXPOSURE_VALUE
+    gain:
+      name: CCD_CONTROLS
+      element: Gain
+    offset:
+      name: CCD_CONTROLS
+      element: Offset
+    temperature:
+      name: CCD_TEMPERATURE
+      element: CCD_TEMPERATURE_VALUE
+    cooler:
+      name: CCD_COOLER
+      on_element: COOLER_ON
+  fits_header_keys:
+    gain: GAIN
+    egain: EGAIN
+    offset: OFFSET
+    filter: FILTER
+    xpixsz: XPIXSZ
+    ypixsz: YPIXSZ
+    default_filter_label: NONE
+
+filter_wheel:
+  properties:
+    slot:
+      name: FILTER_SLOT
+      element: FILTER_SLOT_VALUE
+  filter_map:
+    L: 1
+    R: 2
+    G: 3
+    B: 4
+    Ha: 5
+    OIII: 6
+    SII: 7
+
+telemetry:
+  poll_interval_s: 10
+  temperature_tolerance_c: 0.2
+  stable_samples: 3
+  stabilization_timeout_s: 1800
+
+execution:
+  skip_existing: true
+  filter_settle_s: 2
+  exposure_timeout_padding_s: 30
+
+doe:
+  temperatures_c: [-10, -5]
+  gains: [0, 100, 200]
+  filters: [L, R, G, B, Ha, OIII, SII]
+  frame_sets:
+    bias:
+      enabled: true
+      use_filters: false
+      exposures_s: [0.000032]
+      frames_per_cell: 50
+    dark:
+      enabled: true
+      use_filters: false
+      exposures_s: [1.0, 10.0, 60.0, 300.0]
+      frames_per_cell: 20
+    flat:
+      enabled: true
+      use_filters: true
+      exposures_s: [0.25, 0.5, 1.0, 2.0]
+      frames_per_cell: 20
+
+transfer:
+  remote_windows_share: //192.168.x.x/AstroRuns/
+  remote_mount: /mnt/astro_runs
+  target_subdir: FOCAL
+  rsync_script: ./rsync_daemon.sh
+  rsync_interval_s: 30
