@@ -12,7 +12,7 @@ PixInsight is the standard image-processing application in astrophotography. It 
 
 - `astro-piper/pjsr_generator.py` (2,420 lines) has one generator function per PixInsight process: calibration, star alignment, local normalization, integration, drizzle, the RC-Astro BlurXTerminator, NoiseXTerminator and StarXTerminator plugins, stretches, the Foraxx palette, curves, HDR (high dynamic range) multiscale transform, spectrophotometric color calibration and star recombination.
 - `astro-piper/orchestrator.py` sequences 32 stages across 5 phases: 1 linear preprocessing, 2 linear processing, 3 stretching, 4 nonlinear finishing, 5 RGB (red, green, blue) stars and final merge. A separate Phase 0 builds master bias, dark and flat frames (`calibration_master_builder.py`).
-- 6 stages are breakpoints. The pipeline pauses there for a human decision (crop, sharpening, stretch, hue, star blend) and every other step runs unattended.
+- 5 stages are breakpoints. The pipeline pauses there for a human decision (crop, sharpening, stretch, hue, star blend) and every other step runs unattended.
 - Every stage writes a JSON log: inputs, parameters, wall-clock time, exit code and a SHA-256 hash of each output file.
 
 Run `python orchestrator.py --config pipeline_config.json --list-stages` to print the stage table.
