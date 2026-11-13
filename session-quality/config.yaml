@@ -15,7 +15,7 @@ autofocus:
   curve_fit_points: 7      # Number of points to use in curve fitting
 
 altaz:
-  # Observer location (update for your location)
+  # Observer location: regional default rounded to 0.1 deg (about 10 km); set your own site
   latitude: 45.5        # degrees North
   longitude: -122.8      # degrees East (negative for West)
   elevation: 60.0          # meters above sea level

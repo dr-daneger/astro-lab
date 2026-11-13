@@ -24,7 +24,7 @@ class AutofocusConfig:
 @dataclass
 class AltAzConfig:
     """Configuration for Alt/Az statistics and observer location."""
-    # Observer location (default: Beaverton, OR)
+    # Observer location (default: Portland, OR region, rounded to 0.1 deg; override in config.yaml)
     latitude: float = 45.5       # degrees North
     longitude: float = -122.8     # degrees East (negative for West)
     elevation: float = 60.0         # meters above sea level
