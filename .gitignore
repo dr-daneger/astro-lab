@@ -41,6 +41,7 @@ pnpm-debug.log*
 *.csv
 !**/example_datasets/**/*.csv
 !**/example_datasets/**/*.radec
+astrolib/reports/
 
 # ── AIJ generated jobs ───────────────────────────────────
 transit-photometry/aij/jobs/*.ijm
